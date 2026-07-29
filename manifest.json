@@ -1,0 +1,9 @@
+{
+  "name": "Lapse 工程管理",
+  "short_name": "Lapse 工程",
+  "description": "Lapse Design 工程管理 — 在建案场进度、施工阶段、收款节点",
+  "start_url": "engineering.html",
+  "display": "standalone",
+  "background_color": "#FAFAF7",
+  "theme_color": "#2C2C2A"
+}
