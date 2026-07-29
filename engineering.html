@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工程管理 - LAPSE Design</title>
+<style>
+  :root{
+    --bg:#FAF9F7; --surface:#FFFFFF; --surface-2:#F4F1EC; --surface-3:#EEEAE3;
+    --border:#E5E0D8; --border-strong:#D6CFC4;
+    --text:#2B2926; --text-2:#5C564F; --muted:#8B8279;
+    --accent:#A67C52; --accent-soft:#F2E9DE; --accent-ink:#7A5636;
+    --ok:#5F8462; --ok-soft:#E6EFE6;
+    --warn:#BE8F45; --warn-soft:#F8EFDD;
+    --danger:#AC6055; --danger-soft:#F7E7E4;
+    --shadow:0 1px 2px rgba(43,41,38,.05), 0 8px 24px -12px rgba(43,41,38,.14);
+    --radius:14px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#191817; --surface:#232120; --surface-2:#2B2927; --surface-3:#343230;
+      --border:#38352F; --border-strong:#4A463F;
+      --text:#EDEAE4; --text-2:#B8B2A9; --muted:#8E877E;
+      --accent:#C99C6D; --accent-soft:#3A2F25; --accent-ink:#E2BE93;
+      --ok:#7FA582; --ok-soft:#263026;
+      --warn:#D3A860; --warn-soft:#332A1B;
+      --danger:#C87F72; --danger-soft:#33221F;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#191817; --surface:#232120; --surface-2:#2B2927; --surface-3:#343230;
+    --border:#38352F; --border-strong:#4A463F;
+    --text:#EDEAE4; --text-2:#B8B2A9; --muted:#8E877E;
+    --accent:#C99C6D; --accent-soft:#3A2F25; --accent-ink:#E2BE93;
+    --ok:#7FA582; --ok-soft:#263026;
+    --warn:#D3A860; --warn-soft:#332A1B;
+    --danger:#C87F72; --danger-soft:#33221F;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+  :root[data-theme="light"]{
+    --bg:#FAF9F7; --surface:#FFFFFF; --surface-2:#F4F1EC; --surface-3:#EEEAE3;
+    --border:#E5E0D8; --border-strong:#D6CFC4;
+    --text:#2B2926; --text-2:#5C564F; --muted:#8B8279;
+    --accent:#A67C52; --accent-soft:#F2E9DE; --accent-ink:#7A5636;
+    --ok:#5F8462; --ok-soft:#E6EFE6;
+    --warn:#BE8F45; --warn-soft:#F8EFDD;
+    --danger:#AC6055; --danger-soft:#F7E7E4;
+    --shadow:0 1px 2px rgba(43,41,38,.05), 0 8px 24px -12px rgba(43,41,38,.14);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Roboto,Helvetica,Arial,sans-serif;
+    font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px; margin:0 auto; padding:28px 20px 80px}
+
+  /* ---------- header ---------- */
+  header{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:26px}
+  .brand{display:flex; flex-direction:column; gap:2px}
+  .brand .logo{font-size:13px; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); font-weight:600}
+  .brand h1{margin:0; font-size:26px; font-weight:650; letter-spacing:-.01em}
+  .brand .sub{color:var(--muted); font-size:13.5px}
+  .theme-btn{
+    border:1px solid var(--border); background:var(--surface); color:var(--text-2);
+    border-radius:999px; padding:7px 14px; font-size:13px; cursor:pointer; font-family:inherit;
+    transition:background .15s,border-color .15s;
+  }
+  .theme-btn:hover{background:var(--surface-2); border-color:var(--border-strong)}
+
+  /* ---------- stats ---------- */
+  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(168px,1fr)); gap:12px; margin-bottom:26px}
+  .stat{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px}
+  .stat .k{font-size:12.5px; color:var(--muted); display:flex; align-items:center; gap:6px}
+  .stat .v{font-size:27px; font-weight:650; letter-spacing:-.02em; margin-top:4px; font-variant-numeric:tabular-nums}
+  .stat .v small{font-size:14px; font-weight:500; color:var(--muted); margin-left:2px}
+  .dot{width:7px; height:7px; border-radius:50%; display:inline-block; flex:none}
+
+  /* ---------- toolbar ---------- */
+  .toolbar{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:18px}
+  .tabs{display:flex; gap:4px; background:var(--surface-2); border:1px solid var(--border); padding:4px; border-radius:999px; flex-wrap:wrap}
+  .tab{
+    border:0; background:transparent; color:var(--text-2); font-family:inherit; font-size:13.5px;
+    padding:6px 15px; border-radius:999px; cursor:pointer; transition:.15s; white-space:nowrap;
+  }
+  .tab:hover{color:var(--text)}
+  .tab[aria-selected="true"]{background:var(--surface); color:var(--text); font-weight:600; box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .search{
+    flex:1; min-width:190px; border:1px solid var(--border); background:var(--surface); color:var(--text);
+    border-radius:999px; padding:9px 16px; font-size:14px; font-family:inherit; outline:none; transition:border-color .15s;
+  }
+  .search:focus{border-color:var(--accent)}
+  .search::placeholder{color:var(--muted)}
+
+  /* ---------- cards ---------- */
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:16px}
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px; cursor:pointer; transition:transform .16s, box-shadow .16s, border-color .16s;
+    text-align:left; font-family:inherit; color:inherit; width:100%; display:block;
+  }
+  .card:hover{transform:translateY(-2px); box-shadow:var(--shadow); border-color:var(--border-strong)}
+  .card:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  .card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px}
+  .card h3{margin:0; font-size:16.5px; font-weight:640; letter-spacing:-.01em}
+  .card .addr{color:var(--muted); font-size:13px; margin-top:2px}
+  .badge{font-size:11.5px; font-weight:600; padding:4px 10px; border-radius:999px; white-space:nowrap; flex:none}
+  .b-active{background:var(--accent-soft); color:var(--accent-ink)}
+  .b-done{background:var(--ok-soft); color:var(--ok)}
+  .b-soon{background:var(--warn-soft); color:var(--warn)}
+  .b-late{background:var(--danger-soft); color:var(--danger)}
+
+  .pct-row{display:flex; align-items:baseline; justify-content:space-between; margin-top:16px; font-size:12.5px; color:var(--muted)}
+  .pct-row b{font-size:19px; color:var(--text); font-weight:650; font-variant-numeric:tabular-nums}
+  .bar{height:6px; background:var(--surface-3); border-radius:99px; overflow:hidden; margin-top:7px}
+  .bar > i{display:block; height:100%; background:var(--accent); border-radius:99px; transition:width .5s cubic-bezier(.4,0,.2,1)}
+  .bar.ok > i{background:var(--ok)}
+
+  /* stepper */
+  .steps{display:flex; margin-top:18px; gap:0}
+  .step{flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; position:relative}
+  .step::before{content:""; position:absolute; top:6px; left:-50%; width:100%; height:2px; background:var(--surface-3)}
+  .step:first-child::before{display:none}
+  .step.done::before,.step.now::before{background:var(--accent)}
+  .step i{width:13px; height:13px; border-radius:50%; background:var(--surface-3); border:2px solid var(--surface); position:relative; z-index:1; box-shadow:0 0 0 1px var(--border)}
+  .step.done i{background:var(--accent); box-shadow:0 0 0 1px var(--accent)}
+  .step.now i{background:var(--surface); box-shadow:0 0 0 2px var(--accent); animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 2px var(--accent)}50%{box-shadow:0 0 0 4px var(--accent-soft)}}
+  .step span{font-size:11px; color:var(--muted); white-space:nowrap}
+  .step.now span{color:var(--accent-ink); font-weight:650}
+  .step.done span{color:var(--text-2)}
+
+  .meta{display:flex; justify-content:space-between; gap:10px; margin-top:16px; padding-top:13px; border-top:1px solid var(--border); font-size:12.5px; color:var(--muted); flex-wrap:wrap}
+  .meta b{color:var(--text-2); font-weight:600; font-variant-numeric:tabular-nums}
+
+  .empty{text-align:center; padding:60px 20px; color:var(--muted)}
+
+  /* ---------- modal ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(30,28,26,.45); backdrop-filter:blur(3px);
+    display:none; align-items:flex-start; justify-content:center; padding:24px; z-index:50; overflow-y:auto;
+  }
+  .overlay.open{display:flex}
+  .modal{
+    background:var(--surface); border:1px solid var(--border); border-radius:18px; max-width:660px; width:100%;
+    box-shadow:0 24px 60px -20px rgba(0,0,0,.4); padding:26px; margin:auto 0;
+  }
+  .modal-head{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:4px}
+  .modal h2{margin:0; font-size:21px; font-weight:650; letter-spacing:-.01em}
+  .x{border:0; background:var(--surface-2); color:var(--text-2); width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:17px; line-height:1; flex:none; font-family:inherit}
+  .x:hover{background:var(--surface-3)}
+  .sec{margin-top:22px}
+  .sec h4{margin:0 0 10px; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); font-weight:650}
+
+  .stage-list{display:flex; flex-direction:column; gap:2px}
+  .stage-row{display:flex; align-items:center; gap:11px; padding:9px 11px; border-radius:9px; font-size:14px}
+  .stage-row:hover{background:var(--surface-2)}
+  .stage-row .nm{flex:1; font-weight:500}
+  .stage-row .dt{font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums}
+  .tick{width:19px; height:19px; border-radius:50%; display:grid; place-items:center; font-size:11px; flex:none; font-weight:700}
+  .t-done{background:var(--ok); color:#fff}
+  .t-now{background:var(--accent); color:#fff}
+  .t-wait{background:var(--surface-3); color:var(--muted)}
+
+  table{width:100%; border-collapse:collapse; font-size:14px}
+  th,td{text-align:left; padding:9px 10px; border-bottom:1px solid var(--border)}
+  th{font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:650}
+  td.num{text-align:right; font-variant-numeric:tabular-nums; font-weight:600}
+  tr:last-child td{border-bottom:0}
+  .pill{font-size:11px; font-weight:650; padding:3px 9px; border-radius:99px}
+  .p-paid{background:var(--ok-soft); color:var(--ok)}
+  .p-due{background:var(--danger-soft); color:var(--danger)}
+  .p-wait{background:var(--surface-3); color:var(--muted)}
+
+  .notes{background:var(--surface-2); border-radius:10px; padding:13px 15px; font-size:13.5px; color:var(--text-2); line-height:1.65}
+  .kv{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px}
+  .kv > div{background:var(--surface-2); border-radius:10px; padding:11px 13px}
+  .kv .k{font-size:11.5px; color:var(--muted)}
+  .kv .v{font-weight:600; margin-top:1px; font-variant-numeric:tabular-nums}
+
+  footer{margin-top:44px; padding-top:20px; border-top:1px solid var(--border); color:var(--muted); font-size:12.5px; text-align:center}
+
+  @media (max-width:600px){
+    .wrap{padding:20px 14px 60px}
+    .brand h1{font-size:22px}
+    .grid{grid-template-columns:1fr}
+    .step span{font-size:10px}
+    .modal{padding:20px; border-radius:14px}
+    .overlay{padding:12px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <div class="logo">Lapse Design</div>
+      <h1>工程管理</h1>
+      <div class="sub">在建案场进度 · 施工阶段 · 收款节点</div>
+    </div>
+    <button class="theme-btn" id="themeBtn" type="button">切换主题</button>
+  </header>
+
+  <section class="stats" id="stats"></section>
+
+  <div class="toolbar">
+    <div class="tabs" id="tabs" role="tablist">
+      <button class="tab" role="tab" data-f="all" aria-selected="true">全部</button>
+      <button class="tab" role="tab" data-f="active" aria-selected="false">进行中</button>
+      <button class="tab" role="tab" data-f="soon" aria-selected="false">即将完工</button>
+      <button class="tab" role="tab" data-f="late" aria-selected="false">逾期预警</button>
+      <button class="tab" role="tab" data-f="done" aria-selected="false">已完工</button>
+    </div>
+    <input class="search" id="search" type="search" placeholder="搜索案场名称、地址或负责人…">
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" hidden>没有符合条件的案场</div>
+
+  <footer>LAPSE Design © 2026 · Johor Bahru, Malaysia</footer>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle" id="modal"></div>
+</div>
+
+<script>
+/* =========================================================================
+   施工阶段定义 — 顺序即流程顺序
+   ========================================================================= */
+const STAGES = ["拆除", "水电", "泥作", "木作", "油漆", "收尾"];
+
+/* =========================================================================
+   案场资料 — 要新增/修改案场,直接编辑下面这个阵列即可
+   stage : 目前进行到第几阶段 (0 = 拆除, 5 = 收尾, 6 = 全部完工)
+   stageDates : 各阶段完成日期,长度对应 STAGES
+   payments  : status = paid(已收) / due(逾期未收) / wait(未到期)
+   ========================================================================= */
+const PROJECTS = [
+  {
+    id: "LD-2601",
+    name: "Setia Tropika 双层排屋",
+    addr: "Jalan Setia Tropika 5/2, Johor Bahru",
+    area: "22 x 75 ft",
+    pic: "Kenny",
+    start: "2026-03-10",
+    due: "2026-08-15",
+    stage: 3,
+    stageDates: ["2026-03-18", "2026-04-06", "2026-05-02", "", "", ""],
+    contract: 186000,
+    payments: [
+      { label: "订金 10%",   amount: 18600, status: "paid", date: "2026-03-05" },
+      { label: "第一期 30%", amount: 55800, status: "paid", date: "2026-03-20" },
+      { label: "第二期 30%", amount: 55800, status: "paid", date: "2026-05-04" },
+      { label: "第三期 25%", amount: 46500, status: "wait", date: "" },
+      { label: "尾款 5%",    amount:  9300, status: "wait", date: "" }
+    ],
+    note: "木作已进场,系统柜面板等待供应商到货(预计 7/31)。主人房天花造型客户要求微调,已出修改图待确认。"
+  },
+  {
+    id: "LD-2602",
+    name: "Austin Heights 半独立式",
+    addr: "Jalan Austin Heights 8, Johor Bahru",
+    area: "40 x 80 ft",
+    pic: "Wei Ling",
+    start: "2026-01-20",
+    due: "2026-07-20",
+    stage: 5,
+    stageDates: ["2026-01-28", "2026-02-20", "2026-03-25", "2026-05-18", "2026-06-28", ""],
+    contract: 312000,
+    payments: [
+      { label: "订金 10%",   amount: 31200, status: "paid", date: "2026-01-15" },
+      { label: "第一期 30%", amount: 93600, status: "paid", date: "2026-02-01" },
+      { label: "第二期 30%", amount: 93600, status: "paid", date: "2026-04-02" },
+      { label: "第三期 25%", amount: 78000, status: "paid", date: "2026-06-10" },
+      { label: "尾款 5%",    amount: 15600, status: "due",  date: "" }
+    ],
+    note: "收尾阶段:清洁 + 五金调整。已过合约完工日,尾款尚未收取,需尽快安排验收。"
+  },
+  {
+    id: "LD-2603",
+    name: "Eco Botanic 公寓翻新",
+    addr: "Eco Botanic, Iskandar Puteri",
+    area: "1,150 sqft",
+    pic: "Kenny",
+    start: "2026-05-05",
+    due: "2026-09-30",
+    stage: 1,
+    stageDates: ["2026-05-14", "", "", "", "", ""],
+    contract: 98000,
+    payments: [
+      { label: "订金 10%",   amount:  9800, status: "paid", date: "2026-04-28" },
+      { label: "第一期 30%", amount: 29400, status: "paid", date: "2026-05-16" },
+      { label: "第二期 30%", amount: 29400, status: "wait", date: "" },
+      { label: "第三期 25%", amount: 24500, status: "wait", date: "" },
+      { label: "尾款 5%",    amount:  4900, status: "wait", date: "" }
+    ],
+    note: "水电改线进行中。管理处施工时间限制:平日 9am–5pm,周末不可动工,进度需预留缓冲。"
+  },
+  {
+    id: "LD-2604",
+    name: "Horizon Hills 独立洋房",
+    addr: "Horizon Hills, Iskandar Puteri",
+    area: "50 x 90 ft",
+    pic: "Wei Ling",
+    start: "2026-06-15",
+    due: "2027-01-30",
+    stage: 0,
+    stageDates: ["", "", "", "", "", ""],
+    contract: 458000,
+    payments: [
+      { label: "订金 10%",   amount: 45800, status: "paid", date: "2026-06-08" },
+      { label: "第一期 30%", amount:137400, status: "wait", date: "" },
+      { label: "第二期 30%", amount:137400, status: "wait", date: "" },
+      { label: "第三期 25%", amount:114500, status: "wait", date: "" },
+      { label: "尾款 5%",    amount: 22900, status: "wait", date: "" }
+    ],
+    note: "拆除中。旧有石膏天花全数拆除,发现二楼浴室有渗水,已通知客户需追加防水工程报价(VO-001 草拟中)。"
+  },
+  {
+    id: "LD-2605",
+    name: "Mount Austin 店屋办公室",
+    addr: "Jalan Mutiara Emas, Mount Austin",
+    area: "1,800 sqft",
+    pic: "Kenny",
+    start: "2025-11-01",
+    due: "2026-04-30",
+    stage: 6,
+    stageDates: ["2025-11-08", "2025-11-28", "2025-12-20", "2026-02-10", "2026-03-22", "2026-04-18"],
+    contract: 164000,
+    payments: [
+      { label: "订金 10%",   amount: 16400, status: "paid", date: "2025-10-25" },
+      { label: "第一期 30%", amount: 49200, status: "paid", date: "2025-11-10" },
+      { label: "第二期 30%", amount: 49200, status: "paid", date: "2025-12-22" },
+      { label: "第三期 25%", amount: 41000, status: "paid", date: "2026-03-01" },
+      { label: "尾款 5%",    amount:  8200, status: "paid", date: "2026-04-20" }
+    ],
+    note: "已完工交付,款项全数结清。保固期至 2027-04-18。"
+  }
+];
+
+/* ========================== 工具函式 ========================== */
+const TODAY = new Date("2026-07-29");
+const money = n => "RM " + n.toLocaleString("en-MY");
+const pctOf = p => Math.round((p.stage / STAGES.length) * 100);
+const paidOf = p => p.payments.filter(x => x.status === "paid").reduce((s, x) => s + x.amount, 0);
+const dueOf  = p => p.payments.filter(x => x.status === "due").reduce((s, x) => s + x.amount, 0);
+const daysLeft = p => Math.round((new Date(p.due) - TODAY) / 86400000);
+
+function statusOf(p){
+  if (p.stage >= STAGES.length) return { key:"done",   label:"已完工", cls:"b-done" };
+  const d = daysLeft(p);
+  if (d < 0)  return { key:"late", label:"逾期 " + Math.abs(d) + " 天", cls:"b-late" };
+  if (d <= 30) return { key:"soon", label:"剩 " + d + " 天",            cls:"b-soon" };
+  return { key:"active", label:"进行中", cls:"b-active" };
+}
+
+/* ========================== 统计列 ========================== */
+function renderStats(){
+  const active = PROJECTS.filter(p => statusOf(p).key !== "done").length;
+  const late   = PROJECTS.filter(p => statusOf(p).key === "late").length;
+  const unpaid = PROJECTS.reduce((s, p) => s + (p.contract - paidOf(p)), 0);
+  const overdue= PROJECTS.reduce((s, p) => s + dueOf(p), 0);
+
+  const tiles = [
+    { k:"在建案场", v:active,               c:"var(--accent)" },
+    { k:"逾期预警", v:late,                 c:"var(--danger)" },
+    { k:"未收款项", v:money(unpaid), small:true, c:"var(--warn)" },
+    { k:"已逾期应收", v:money(overdue), small:true, c:"var(--danger)" }
+  ];
+
+  document.getElementById("stats").innerHTML = tiles.map(t => `
+    <div class="stat">
+      <div class="k"><span class="dot" style="background:${t.c}"></span>${t.k}</div>
+      <div class="v" style="${t.small ? "font-size:20px" : ""}">${t.v}</div>
+    </div>`).join("");
+}
+
+/* ========================== 卡片列表 ========================== */
+let filter = "all", keyword = "";
+
+function renderGrid(){
+  const kw = keyword.trim().toLowerCase();
+  const list = PROJECTS.filter(p => {
+    const st = statusOf(p).key;
+    const okF = filter === "all" ? true : st === filter;
+    const okK = !kw || (p.name + p.addr + p.pic + p.id).toLowerCase().includes(kw);
+    return okF && okK;
+  });
+
+  document.getElementById("empty").hidden = list.length > 0;
+
+  document.getElementById("grid").innerHTML = list.map(p => {
+    const st = statusOf(p), pct = pctOf(p), paid = paidOf(p);
+    return `
+      <button class="card" data-id="${p.id}" type="button">
+        <div class="card-top">
+          <div>
+            <h3>${p.name}</h3>
+            <div class="addr">${p.addr}</div>
+          </div>
+          <span class="badge ${st.cls}">${st.label}</span>
+        </div>
+
+        <div class="pct-row"><span>整体进度</span><b>${pct}%</b></div>
+        <div class="bar ${pct === 100 ? "ok" : ""}"><i style="width:${pct}%"></i></div>
+
+        <div class="steps">
+          ${STAGES.map((s, i) => {
+            const cls = i < p.stage ? "done" : (i === p.stage ? "now" : "");
+            return `<div class="step ${cls}"><i></i><span>${s}</span></div>`;
+          }).join("")}
+        </div>
+
+        <div class="meta">
+          <span>负责人 <b>${p.pic}</b></span>
+          <span>完工 <b>${p.due}</b></span>
+          <span>已收 <b>${Math.round(paid / p.contract * 100)}%</b></span>
+        </div>
+      </button>`;
+  }).join("");
+}
+
+/* ========================== 详情弹窗 ========================== */
+function openModal(id){
+  const p = PROJECTS.find(x => x.id === id);
+  if (!p) return;
+  const st = statusOf(p), paid = paidOf(p);
+
+  document.getElementById("modal").innerHTML = `
+    <div class="modal-head">
+      <div>
+        <h2 id="mTitle">${p.name}</h2>
+        <div class="addr" style="color:var(--muted);font-size:13px">${p.id} · ${p.addr}</div>
+      </div>
+      <button class="x" id="closeX" type="button" aria-label="关闭">×</button>
+    </div>
+    <span class="badge ${st.cls}">${st.label}</span>
+
+    <div class="sec">
+      <div class="kv">
+        <div><div class="k">面积</div><div class="v">${p.area}</div></div>
+        <div><div class="k">负责人</div><div class="v">${p.pic}</div></div>
+        <div><div class="k">开工日</div><div class="v">${p.start}</div></div>
+        <div><div class="k">合约完工</div><div class="v">${p.due}</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h4>施工阶段</h4>
+      <div class="stage-list">
+        ${STAGES.map((s, i) => {
+          const done = i < p.stage, now = i === p.stage && p.stage < STAGES.length;
+          const t = done ? "t-done" : now ? "t-now" : "t-wait";
+          const mark = done ? "✓" : now ? "●" : (i + 1);
+          const dt = done ? (p.stageDates[i] || "已完成") : now ? "进行中" : "未开始";
+          return `<div class="stage-row">
+                    <span class="tick ${t}">${mark}</span>
+                    <span class="nm">${s}</span>
+                    <span class="dt">${dt}</span>
+                  </div>`;
+        }).join("")}
+      </div>
+    </div>
+
+    <div class="sec">
+      <h4>收款节点</h4>
+      <table>
+        <thead><tr><th>项目</th><th>状态</th><th style="text-align:right">金额</th></tr></thead>
+        <tbody>
+          ${p.payments.map(x => {
+            const cls = x.status === "paid" ? "p-paid" : x.status === "due" ? "p-due" : "p-wait";
+            const txt = x.status === "paid" ? "已收 " + x.date : x.status === "due" ? "逾期未收" : "未到期";
+            return `<tr><td>${x.label}</td><td><span class="pill ${cls}">${txt}</span></td><td class="num">${money(x.amount)}</td></tr>`;
+          }).join("")}
+          <tr>
+            <td colspan="2" style="font-weight:650">合约总额 / 已收</td>
+            <td class="num">${money(p.contract)} <span style="color:var(--ok)">/ ${money(paid)}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sec">
+      <h4>现场备注</h4>
+      <div class="notes">${p.note}</div>
+    </div>`;
+
+  document.getElementById("overlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+  document.getElementById("closeX").focus();
+}
+
+function closeModal(){
+  document.getElementById("overlay").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+/* ========================== 事件绑定 ========================== */
+document.getElementById("grid").addEventListener("click", e => {
+  const c = e.target.closest(".card");
+  if (c) openModal(c.dataset.id);
+});
+document.getElementById("overlay").addEventListener("click", e => {
+  if (e.target.id === "overlay" || e.target.id === "closeX") closeModal();
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+document.getElementById("tabs").addEventListener("click", e => {
+  const t = e.target.closest(".tab");
+  if (!t) return;
+  [...document.querySelectorAll(".tab")].forEach(x => x.setAttribute("aria-selected", x === t));
+  filter = t.dataset.f;
+  renderGrid();
+});
+
+document.getElementById("search").addEventListener("input", e => {
+  keyword = e.target.value;
+  renderGrid();
+});
+
+document.getElementById("themeBtn").addEventListener("click", () => {
+  const cur = document.documentElement.getAttribute("data-theme");
+  const sysDark = matchMedia("(prefers-color-scheme:dark)").matches;
+  const next = cur ? (cur === "dark" ? "light" : "dark") : (sysDark ? "light" : "dark");
+  document.documentElement.setAttribute("data-theme", next);
+});
+
+/* ========================== 启动 ========================== */
+renderStats();
+renderGrid();
+</script>
+</body>
+</html>
