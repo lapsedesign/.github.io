@@ -1,0 +1,28 @@
+{
+  "name": "Lapse 品味 Inbox",
+  "short_name": "品味 Inbox",
+  "description": "分享貼文連結，標記正／反，批次匯出到品味庫",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f3f0",
+  "theme_color": "#2b2724",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "share_target": {
+    "action": "./",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2b2724">
+<title>Lapse 品味 Inbox</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#f5f3f0; --card:#fffefc; --ink:#2b2724; --mute:#8a8178;
+    --line:#e3ddd5; --pos:#4a6b52; --neg:#8c4a3f; --accent:#2b2724;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC","PingFang TC",sans-serif;
+    line-height:1.5;padding-bottom:env(safe-area-inset-bottom)}
+  header{padding:20px 18px 12px;display:flex;align-items:baseline;gap:10px}
+  h1{font-size:17px;margin:0;letter-spacing:.02em}
+  .count{font-size:13px;color:var(--mute)}
+  main{padding:0 14px 40px;max-width:640px;margin:0 auto}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+  .capture{border-color:var(--accent)}
+  .label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:6px}
+  .url{font-size:13px;word-break:break-all;color:var(--ink);text-decoration:none;display:block}
+  .meta{font-size:12px;color:var(--mute);margin-top:4px}
+  input[type=text]{width:100%;padding:10px;margin-top:10px;border:1px solid var(--line);
+    border-radius:9px;font-size:15px;background:#fff;color:var(--ink);font-family:inherit}
+  .row{display:flex;gap:8px;margin-top:10px}
+  button{flex:1;padding:12px;border-radius:9px;border:1px solid var(--line);background:#fff;
+    color:var(--ink);font-size:14px;font-family:inherit;cursor:pointer}
+  button.pos{background:var(--pos);border-color:var(--pos);color:#fff}
+  button.neg{background:var(--neg);border-color:var(--neg);color:#fff}
+  button.ghost{flex:0 0 auto;padding:10px 12px;font-size:13px;color:var(--mute)}
+  .item{display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)}
+  .item:last-child{border-bottom:0}
+  .dot{flex:0 0 auto;width:8px;height:8px;border-radius:50%;margin-top:7px}
+  .dot.pos{background:var(--pos)} .dot.neg{background:var(--neg)}
+  .body{flex:1;min-width:0}
+  .body a{font-size:13px;color:var(--ink);text-decoration:none;word-break:break-all}
+  .note{font-size:13px;color:var(--mute)}
+  .x{flex:0 0 auto;border:0;background:none;color:var(--mute);font-size:18px;padding:0 4px;width:auto}
+  .tabs{display:flex;gap:6px;margin:2px 0 12px}
+  .tabs button{padding:8px;font-size:13px}
+  .tabs button[aria-selected=true]{background:var(--accent);color:#fff;border-color:var(--accent)}
+  pre{background:#efebe5;border-radius:9px;padding:11px;font-size:11.5px;overflow-x:auto;
+    white-space:pre-wrap;word-break:break-all;margin:8px 0 0;color:#4a443d}
+  .empty{color:var(--mute);font-size:14px;text-align:center;padding:28px 10px}
+  details summary{cursor:pointer;font-size:13px;color:var(--mute)}
+  details[open] summary{margin-bottom:8px}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--accent);
+    color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;opacity:0;pointer-events:none;
+    transition:opacity .2s}
+  .toast.on{opacity:1}
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#191715;--card:#221f1d;--ink:#eae5df;--mute:#948b81;--line:#332f2b;--accent:#eae5df}
+    button{background:#2b2724;color:var(--ink)}
+    button[aria-selected=true],.tabs button[aria-selected=true]{background:#eae5df;color:#191715}
+    input[type=text]{background:#191715}
+    pre{background:#191715;color:#a89f95}
+  }
+</style>
+</head>
+<body>
+<header><h1>品味 Inbox</h1><span class="count" id="count"></span></header>
+<main>
+  <div id="capture"></div>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" data-tab="all" aria-selected="true">全部</button>
+    <button role="tab" data-tab="pos" aria-selected="false">正</button>
+    <button role="tab" data-tab="neg" aria-selected="false">反</button>
+  </div>
+
+  <div class="card"><div id="list"></div></div>
+
+  <div class="card">
+    <div class="label">匯出到品味庫</div>
+    <div class="row">
+      <button id="copyPos">複製「正」清單</button>
+      <button id="copyNeg">複製「反」清單</button>
+    </div>
+    <div class="row">
+      <button id="dlJson">備份 JSON</button>
+      <button id="clearDone" class="ghost">清空已匯出</button>
+    </div>
+    <details style="margin-top:12px">
+      <summary>桌面抓圖指令（gallery-dl）</summary>
+      <pre id="cmd"></pre>
+      <div class="meta">把清單存成 pos.txt / neg.txt，在電腦跑上面指令，整組輪播照片會落進 Lapse品味inbox 的正／反資料夾，接著跑蒸餾。</div>
+    </details>
+  </div>
+
+  <details class="card">
+    <summary>安裝方法</summary>
+    <div class="meta" style="margin-top:8px">
+      Android Chrome 開這一頁 → 選單「加到主畫面 / 安裝應用程式」。裝好之後，IG 貼文按分享就會多一個「品味 Inbox」，選它，連結直接進來。
+    </div>
+  </details>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY = 'lapse.taste.inbox.v1';
+const $ = (s) => document.querySelector(s);
+let items = load();
+let tab = 'all';
+
+function load(){
+  try { return JSON.parse(localStorage.getItem(KEY)) || []; }
+  catch { return []; }
+}
+function save(){
+  try { localStorage.setItem(KEY, JSON.stringify(items)); }
+  catch { toast('儲存失敗，空間不足'); }
+}
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  setTimeout(() => t.classList.remove('on'), 1800);
+}
+
+// --- incoming share ---------------------------------------------------------
+function firstUrl(str){
+  const m = (str || '').match(/https?:\/\/[^\s<>"']+/);
+  return m ? m[0] : '';
+}
+function normalize(u){
+  try {
+    const url = new URL(u);
+    // Strip tracking params so the same post shared twice dedupes.
+    ['igsh','igshid','utm_source','utm_medium','utm_campaign','xhsshare','share_from','app_platform']
+      .forEach((p) => url.searchParams.delete(p));
+    url.hash = '';
+    return url.toString().replace(/\/$/, '');
+  } catch { return (u || '').trim(); }
+}
+function source(u){
+  if (/instagram\.com/i.test(u)) return 'Instagram';
+  if (/xiaohongshu\.com|xhslink\.com/i.test(u)) return '小红书';
+  if (/pinterest\./i.test(u)) return 'Pinterest';
+  try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return '連結'; }
+}
+function handleOf(u){
+  const m = u.match(/instagram\.com\/([A-Za-z0-9._]+)\/(?:p|reel)\//i);
+  return m ? '@' + m[1] : '';
+}
+
+const q = new URLSearchParams(location.search);
+const shared = normalize(firstUrl(q.get('url')) || firstUrl(q.get('text')) || q.get('url') || '');
+const sharedTitle = q.get('title') || '';
+
+function renderCapture(){
+  const box = $('#capture');
+  if (!shared) { box.innerHTML = ''; return; }
+  const dup = items.find((i) => i.url === shared);
+  box.innerHTML =
+    '<div class="card capture">' +
+      '<div class="label">' + source(shared) + (dup ? ' · 已收過' : ' · 新收到') + '</div>' +
+      '<a class="url" href="' + esc(shared) + '" target="_blank" rel="noopener">' + esc(shared) + '</a>' +
+      (handleOf(shared) || sharedTitle
+        ? '<div class="meta">' + esc(handleOf(shared) || sharedTitle) + '</div>' : '') +
+      '<input type="text" id="noteIn" placeholder="這張要記什麼？例：石材背牆比例、深木＋白牆" ' +
+        'value="' + esc(dup ? dup.note : '') + '">' +
+      '<div class="row">' +
+        '<button class="pos" id="saveP">正 · 想學</button>' +
+        '<button class="neg" id="saveN">反 · 避開</button>' +
+      '</div>' +
+    '</div>';
+  $('#saveP').onclick = () => add('pos');
+  $('#saveN').onclick = () => add('neg');
+}
+
+function add(verdict){
+  const note = ($('#noteIn').value || '').trim();
+  const existing = items.find((i) => i.url === shared);
+  if (existing) {
+    existing.verdict = verdict; existing.note = note; existing.at = Date.now();
+    toast('已更新');
+  } else {
+    items.unshift({ url: shared, verdict, note, src: source(shared),
+      who: handleOf(shared) || sharedTitle, at: Date.now() });
+    toast(verdict === 'pos' ? '收進「正」' : '收進「反」');
+  }
+  save(); render();
+  // Clear the share params so a reload does not re-offer the same capture.
+  history.replaceState({}, '', location.pathname);
+  setTimeout(() => { if (document.referrer || window.opener) window.close?.(); }, 700);
+}
+
+// --- list -------------------------------------------------------------------
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g,
+    (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+function render(){
+  const shown = items.filter((i) => tab === 'all' || i.verdict === tab);
+  $('#count').textContent = items.length
+    ? items.filter((i) => i.verdict === 'pos').length + ' 正 · ' +
+      items.filter((i) => i.verdict === 'neg').length + ' 反'
+    : '';
+  $('#list').innerHTML = shown.length
+    ? shown.map((i, n) =>
+        '<div class="item">' +
+          '<span class="dot ' + i.verdict + '"></span>' +
+          '<div class="body">' +
+            '<a href="' + esc(i.url) + '" target="_blank" rel="noopener">' +
+              esc(i.who || i.src) + ' · ' + esc(i.url.replace(/^https?:\/\//, '')) +
+            '</a>' +
+            (i.note ? '<div class="note">' + esc(i.note) + '</div>' : '') +
+          '</div>' +
+          '<button class="x" data-url="' + esc(i.url) + '" aria-label="刪除">&times;</button>' +
+        '</div>').join('')
+    : '<div class="empty">還沒有東西。去 IG 按分享，選「品味 Inbox」。</div>';
+  $('#list').querySelectorAll('.x').forEach((b) => {
+    b.onclick = () => { items = items.filter((i) => i.url !== b.dataset.url); save(); render(); };
+  });
+  $('#cmd').textContent = cmdText();
+}
+
+function listOf(v){ return items.filter((i) => i.verdict === v).map((i) => i.url).join('\n'); }
+
+function cmdText(){
+  return [
+    '# 一次過抓全部輪播照片（電腦跑，手機不碰 IG 內部端點）',
+    'pip install gallery-dl',
+    '',
+    'gallery-dl --cookies-from-browser chrome \\',
+    '  -D "$HOME/Google Drive/Lapse品味inbox/正" -i pos.txt',
+    '',
+    'gallery-dl --cookies-from-browser chrome \\',
+    '  -D "$HOME/Google Drive/Lapse品味inbox/反" -i neg.txt'
+  ].join('\n');
+}
+
+async function copy(text, what){
+  if (!text) { toast('清單是空的'); return; }
+  try { await navigator.clipboard.writeText(text); toast('已複製 ' + what); }
+  catch {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); ta.remove(); toast('已複製 ' + what);
+  }
+}
+
+$('#copyPos').onclick = () => copy(listOf('pos'), '「正」清單');
+$('#copyNeg').onclick = () => copy(listOf('neg'), '「反」清單');
+$('#dlJson').onclick = () => {
+  const blob = new Blob([JSON.stringify(items, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'lapse-taste-inbox-' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click(); URL.revokeObjectURL(a.href);
+};
+$('#clearDone').onclick = () => {
+  if (!items.length) return;
+  if (confirm('清空全部 ' + items.length + ' 筆？先按「備份 JSON」比較保險。')) {
+    items = []; save(); render();
+  }
+};
+document.querySelectorAll('[role=tab]').forEach((b) => {
+  b.onclick = () => {
+    tab = b.dataset.tab;
+    document.querySelectorAll('[role=tab]').forEach((o) =>
+      o.setAttribute('aria-selected', String(o === b)));
+    render();
+  };
+});
+
+renderCapture();
+render();
+
+if ('serviceWorker' in navigator) {
+  addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>
