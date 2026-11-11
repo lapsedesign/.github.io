@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>湯澤白馬滑雪自駕</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="2月中旬東京出發，長野・越後湯澤・白馬 7天6夜滑雪自駕行程與費用預估。">
+<meta name="description" content="長野集合、長野解散的 7 天 6 夜滑雪自駕提案：越後湯澤 4 天＋白馬 2 天，含路線動態地圖、雪場介紹與費用預估。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
-/* Layout: one 880px reading column. Sticky section nav, hero with trip spec, route rail beside resort split, day timeline (number rail + slots), cost table + group calculator, driving notes, checklist. */
+/* Layout: one 880px column. Sticky nav, snowy hero with trip spec, meet/split cards, animated route map, day timeline, resort cards + elevation chart, cost bars + calculator, driving rules, checklist, sources. */
 :root {
   --snow: #F2F5F8;
   --paper: #FFFFFF;
@@ -21,7 +21,11 @@
   --ice-soft: #E2EAF9;
   --flag: #C23F2A;
   --flag-soft: #F8E5E0;
-  --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --land: #EDF1F5;
+  --sea: #D4E1EE;
+  --road: #B7C3D0;
+  --flake: rgba(35, 86, 196, 0.22);
+  --font-body: "Noto Sans TC", "PingFang TC", "PingFang SC", "Microsoft JhengHei", "Microsoft YaHei", system-ui, sans-serif;
   --font-sign: "Barlow Condensed", "Arial Narrow", "Noto Sans TC", "PingFang TC", sans-serif;
   color-scheme: light;
   padding-top: env(safe-area-inset-top, 0px);
@@ -31,23 +35,21 @@
   :root:not([data-theme="light"]) {
     --snow: #0C121A; --paper: #131C28; --ink: #E4EBF3; --muted: #93A2B4; --line: #24344A;
     --ice: #8AABFF; --ice-soft: #1A2944; --flag: #FF8A6E; --flag-soft: #3A231E;
+    --land: #16212E; --sea: #0E1824; --road: #34465C; --flake: rgba(228, 235, 243, 0.55);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --snow: #0C121A; --paper: #131C28; --ink: #E4EBF3; --muted: #93A2B4; --line: #24344A;
   --ice: #8AABFF; --ice-soft: #1A2944; --flag: #FF8A6E; --flag-soft: #3A231E;
+  --land: #16212E; --sea: #0E1824; --road: #34465C; --flake: rgba(228, 235, 243, 0.55);
   color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
 body {
-  margin: 0;
-  background: var(--snow);
-  color: var(--ink);
-  font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 1.75;
+  margin: 0; background: var(--snow); color: var(--ink);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.75;
   -webkit-text-size-adjust: 100%;
 }
 img { max-width: 100%; }
@@ -57,110 +59,152 @@ img { max-width: 100%; }
 a { color: var(--ice); }
 h1, h2, h3 { text-wrap: balance; margin: 0; line-height: 1.3; }
 p { margin: 0; }
+.num { font-variant-numeric: tabular-nums; }
 
 .wrap {
-  max-width: 880px;
-  margin: 0 auto;
+  max-width: 880px; margin: 0 auto;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
 
-/* Sticky nav */
-body::before {
-  content: ""; position: fixed; inset: 0 0 auto;
-  height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper);
-}
-.nav {
-  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9;
-  background: var(--paper);
-  border-bottom: 1px solid var(--line);
-}
-.nav .wrap { display: flex; align-items: center; gap: 16px; }
-.brand {
-  font-family: var(--font-sign); font-weight: 700; font-size: 18px; letter-spacing: 0.04em;
-  color: var(--ink); text-decoration: none; white-space: nowrap; flex: none;
-}
+/* Nav */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: var(--paper); border-bottom: 1px solid var(--line); }
+.nav .wrap { display: flex; align-items: center; gap: 12px; }
+.brand { font-family: var(--font-sign); font-weight: 700; font-size: 18px; letter-spacing: 0.04em; color: var(--ink); text-decoration: none; white-space: nowrap; flex: none; }
 .nav-links { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; min-width: 0; margin-left: auto; }
 .nav-links::-webkit-scrollbar { display: none; }
-.nav-links a {
-  padding: 12px 10px; white-space: nowrap; color: var(--muted); text-decoration: none;
-  font-size: 14px; font-weight: 500; border-bottom: 2px solid transparent;
-}
+.nav-links a { padding: 12px 9px; white-space: nowrap; color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; border-bottom: 2px solid transparent; }
 .nav-links a:hover, .nav-links a.on { color: var(--ink); border-bottom-color: var(--ice); }
+.lang { flex: none; appearance: none; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font: 500 13px/1 var(--font-body); padding: 7px 10px; border-radius: 6px; cursor: pointer; }
+.lang:hover { border-color: var(--ice); }
 
 /* Hero */
-.hero { padding-block: 48px 8px; display: grid; gap: 20px; }
+.hero-band { position: relative; overflow: hidden; }
+#snow { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.hero { position: relative; padding-block: 44px 8px; display: grid; gap: 18px; }
+.badges { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.badge { font-size: 12.5px; font-weight: 500; padding: 2px 10px; border-radius: 999px; background: var(--ice-soft); color: var(--ice); }
 .eyebrow { font-size: 13px; font-weight: 500; letter-spacing: 0.12em; color: var(--muted); }
 h1 { font-size: clamp(34px, 7vw, 54px); font-weight: 700; letter-spacing: 0.02em; }
 h1 .lat { font-family: var(--font-sign); font-weight: 600; color: var(--ice); letter-spacing: 0.03em; }
 .lede { max-width: 38em; color: var(--muted); font-size: 16.5px; }
 .lede strong { color: var(--ink); font-weight: 500; }
-.spec {
-  margin: 8px 0 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-top: 2px solid var(--ink); border-bottom: 1px solid var(--line);
-}
+.spec { margin: 6px 0 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 2px solid var(--ink); border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--snow) 80%, transparent); }
 .spec div { padding: 12px 12px 14px 0; display: grid; gap: 2px; min-width: 0; }
 .spec div + div { padding-left: 14px; border-left: 1px solid var(--line); }
 .spec dt { font-size: 12.5px; letter-spacing: 0.1em; color: var(--muted); }
-.spec dd { margin: 0; font-family: var(--font-sign); font-weight: 600; font-size: 28px; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.spec dd { margin: 0; font-family: var(--font-sign); font-weight: 600; font-size: 26px; line-height: 1.15; font-variant-numeric: tabular-nums; }
 .spec dd small { font-family: var(--font-body); font-size: 13px; font-weight: 500; color: var(--muted); margin-left: 2px; }
 @media (max-width: 620px) {
   .spec { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .spec div:nth-child(3) { padding-left: 0; border-left: 0; }
   .spec div:nth-child(n+3) { border-top: 1px solid var(--line); }
 }
-.ridge { display: block; width: 100%; height: 56px; margin-top: 28px; }
+.ridge { display: block; width: 100%; height: 56px; margin-top: 24px; }
 .ridge path { fill: none; stroke: var(--line); stroke-width: 1.5; }
 .ridge .snowcap { stroke: var(--ice); stroke-width: 2; }
 
 /* Sections */
 .section { padding-block: 40px; scroll-margin-top: calc(56px + env(safe-area-inset-top, 0px)); }
-.section-head { display: grid; gap: 6px; margin-bottom: 24px; }
+.section-head { display: grid; gap: 6px; margin-bottom: 22px; }
 .kicker { font-family: var(--font-sign); font-weight: 600; font-size: 14px; letter-spacing: 0.16em; color: var(--ice); }
 h2 { font-size: 28px; font-weight: 700; }
-.sub { color: var(--muted); font-size: 15px; max-width: 40em; }
+.sub { color: var(--muted); font-size: 15px; max-width: 42em; }
+.panel { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; }
 
-/* Route */
-.route-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 32px; align-items: start; }
-@media (max-width: 720px) { .route-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; } }
-.route { list-style: none; margin: 0; padding: 0; }
-.route li { position: relative; padding-left: 30px; }
-.stop { padding-block: 2px; }
-.stop::before {
-  content: ""; position: absolute; left: 0; top: 8px; width: 14px; height: 14px;
-  border-radius: 50%; background: var(--paper); border: 3px solid var(--ink);
+/* Meet */
+.meet { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.meet .panel { padding: 18px; display: grid; gap: 8px; align-content: start; }
+.meet .when { font-family: var(--font-sign); font-weight: 700; font-size: 30px; line-height: 1.1; color: var(--ice); }
+.meet .when small { font-family: var(--font-body); font-size: 14px; font-weight: 500; color: var(--muted); margin-left: 6px; }
+.meet h3 { font-size: 18px; }
+.meet p { font-size: 15px; color: var(--muted); }
+.meet p strong { color: var(--ink); font-weight: 500; }
+.free { margin-top: 14px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 2px solid var(--ink); }
+.free div { padding: 14px 16px 4px 0; min-width: 0; }
+.free div + div { padding-left: 16px; border-left: 1px solid var(--line); }
+.free h4 { margin: 0 0 4px; font-size: 15px; }
+.free p { font-size: 14.5px; color: var(--muted); }
+@media (max-width: 720px) {
+  .meet, .free { grid-template-columns: minmax(0, 1fr); }
+  .free div, .free div + div { padding: 12px 0; border-left: 0; }
+  .free div + div { border-top: 1px solid var(--line); }
 }
-.stop.base::before { background: var(--ice); border-color: var(--ice); }
-.stop b { font-weight: 700; font-size: 17px; }
-.stop small { margin-left: 8px; font-size: 13.5px; color: var(--muted); }
-.leg { padding-block: 10px 12px; font-size: 13.5px; color: var(--muted); }
-.leg::before { content: ""; position: absolute; left: 6px; top: 0; bottom: 0; border-left: 2px solid var(--flag); }
-.leg.rail::before { border-left: 2px dashed var(--ice); }
-.leg .mode { font-weight: 500; color: var(--ink); margin-right: 6px; }
-.legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 16px; font-size: 13px; color: var(--muted); }
-.legend span { display: inline-flex; align-items: center; gap: 6px; }
-.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px dashed var(--ice); }
-.legend i.car { border-top-style: solid; border-top-color: var(--flag); }
 
-.areas { display: grid; gap: 14px; }
-.area { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: grid; gap: 10px; }
-.area-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.area h3 { font-size: 18px; }
-.area .pref { font-size: 13px; color: var(--muted); }
-.area ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-.area li { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; border-top: 1px dashed var(--line); padding-top: 6px; }
-.area li span:last-child { font-family: var(--font-sign); font-weight: 600; color: var(--ice); white-space: nowrap; }
-.car-note { font-size: 14.5px; color: var(--muted); padding-left: 14px; border-left: 3px solid var(--flag); }
-.car-note strong { color: var(--ink); font-weight: 500; }
+/* Map */
+.map-panel { padding: 0; overflow: hidden; }
+.map-tools { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px; border-bottom: 1px solid var(--line); align-items: center; }
+.chip { appearance: none; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font: 500 13.5px/1 var(--font-body); padding: 8px 11px; border-radius: 999px; cursor: pointer; white-space: nowrap; }
+.chip:hover { border-color: var(--ice); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.chip.play { background: var(--ice); color: var(--paper); border-color: var(--ice); margin-left: auto; display: inline-flex; gap: 6px; align-items: center; }
+.chip.play svg { width: 12px; height: 12px; fill: currentColor; }
+.map-wrap { position: relative; }
+#map { display: block; width: 100%; height: auto; background: var(--land); }
+#map .sea { fill: var(--sea); }
+#map .coast { fill: none; stroke: var(--road); stroke-width: 1; }
+#map .base { fill: none; stroke: var(--road); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+#map .hl { fill: none; stroke: var(--flag); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+#map .hl.on { opacity: 1; }
+#map .peak { fill: var(--muted); opacity: 0.55; }
+#map text { font-family: var(--font-body); fill: var(--ink); font-size: 12px; }
+#map .t-muted { fill: var(--muted); font-size: 11px; }
+#map .t-big { font-size: 14px; font-weight: 700; }
+#map .t-sea { fill: var(--muted); font-size: 14px; letter-spacing: 0.4em; opacity: 0.8; }
+#map .t-pref { fill: var(--muted); font-size: 13px; letter-spacing: 0.3em; opacity: 0.7; }
+#map .halo { stroke: var(--land); stroke-width: 3.5px; paint-order: stroke; stroke-linejoin: round; }
+#map .resort { fill: var(--ice); stroke: var(--paper); stroke-width: 1.5; }
+#map .stay { fill: var(--paper); stroke: var(--ink); stroke-width: 2.5; }
+#map .station { fill: var(--ink); stroke: var(--paper); stroke-width: 2; }
+#map .pulse { fill: none; stroke: var(--ice); stroke-width: 2; opacity: 0; }
+#map .pulse.on { animation: pulse 1.6s ease-out infinite; }
+@keyframes pulse { 0% { opacity: 0.9; transform: scale(0.6); } 100% { opacity: 0; transform: scale(2.4); } }
+#map .pulse { transform-box: fill-box; transform-origin: center; }
+#map .car-ring { fill: var(--flag); opacity: 0.25; }
+#map .car { fill: var(--flag); stroke: var(--paper); stroke-width: 2; }
+.hud { position: absolute; left: 12px; top: 12px; right: 12px; max-width: 300px; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 14px; display: grid; gap: 2px; box-shadow: 0 4px 16px rgba(19, 32, 49, 0.08); }
+.hud b { font-family: var(--font-sign); font-weight: 700; font-size: 17px; color: var(--flag); letter-spacing: 0.04em; }
+.hud span { color: var(--muted); }
+@media (max-width: 560px) {
+  .hud { position: static; max-width: none; border: 0; border-top: 1px solid var(--line); border-radius: 0; box-shadow: none; }
+  #map text { font-size: 19px; }
+  #map .t-big { font-size: 22px; }
+  #map .t-muted { font-size: 16px; }
+  #map .t-sea, #map .t-pref { font-size: 20px; }
+  #map .minor { display: none; }
+}
+.legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 10px 12px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend svg { width: 14px; height: 14px; }
+.legend .lg-road { stroke: var(--flag); stroke-width: 3; }
+.legend .lg-resort { fill: var(--ice); }
+.legend .lg-stay { fill: var(--paper); stroke: var(--ink); stroke-width: 2.5; }
+.legend .lg-station { fill: var(--ink); }
+.legs { margin-top: 14px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 2px solid var(--ink); }
+.legs div { padding: 12px 12px 12px 0; min-width: 0; }
+.legs div:nth-child(3n+2), .legs div:nth-child(3n) { padding-left: 14px; border-left: 1px solid var(--line); }
+.legs div:nth-child(n+4) { border-top: 1px solid var(--line); }
+.legs b { font-family: var(--font-sign); font-size: 15px; letter-spacing: 0.06em; color: var(--muted); }
+.legs p { font-size: 15px; font-weight: 500; }
+.legs small { display: block; font-size: 13.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+@media (max-width: 620px) {
+  .legs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .legs div:nth-child(3n+2), .legs div:nth-child(3n) { padding-left: 0; border-left: 0; }
+  .legs div:nth-child(2n) { padding-left: 14px; border-left: 1px solid var(--line); }
+  .legs div:nth-child(n+3) { border-top: 1px solid var(--line); }
+}
 
 /* Days */
 .days { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
-.day { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 20px; padding-block: 26px; border-bottom: 1px solid var(--line); scroll-margin-top: calc(56px + env(safe-area-inset-top, 0px)); }
-.day-rail { display: grid; align-content: start; justify-items: start; line-height: 1; }
+.day { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 20px; padding-block: 26px; border-bottom: 1px solid var(--line); scroll-margin-top: calc(56px + env(safe-area-inset-top, 0px)); }
+.day-rail { display: grid; align-content: start; justify-items: start; line-height: 1; gap: 4px; }
 .day-k { font-family: var(--font-sign); font-weight: 600; font-size: 14px; letter-spacing: 0.18em; color: var(--muted); }
-.day-n { font-family: var(--font-sign); font-weight: 700; font-size: 52px; color: var(--ice); font-variant-numeric: tabular-nums; margin-top: 4px; white-space: nowrap; }
+.day-n { font-family: var(--font-sign); font-weight: 700; font-size: 52px; color: var(--ice); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .day-n.narrow { font-size: 42px; }
 .day.move .day-n { color: var(--flag); }
+.day-date { font-family: var(--font-sign); font-weight: 600; font-size: 16px; color: var(--ink); white-space: nowrap; margin-top: 4px; }
+.day-date small { font-family: var(--font-body); font-size: 12px; color: var(--muted); margin-left: 2px; }
 .day-body { display: grid; gap: 14px; min-width: 0; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .tag { font-size: 12.5px; line-height: 1.6; padding: 1px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
@@ -168,75 +212,123 @@ h2 { font-size: 28px; font-weight: 700; }
 .tag.move { background: var(--flag-soft); color: var(--flag); border-color: transparent; font-weight: 500; }
 .day h3 { font-size: 21px; font-weight: 700; }
 .day h3 .en { font-family: var(--font-sign); font-weight: 600; color: var(--muted); font-size: 18px; margin-left: 6px; letter-spacing: 0.02em; }
-.slots { margin: 0; display: grid; gap: 12px; }
-.slots > div { display: grid; grid-template-columns: 5.2em minmax(0, 1fr); gap: 12px; }
-.slots dt { font-size: 13px; font-weight: 500; color: var(--muted); letter-spacing: 0.08em; padding-top: 3px; }
-.slots dd { margin: 0; max-width: 36em; }
-.slots strong { font-weight: 700; }
-.slots ul { margin: 6px 0 0; padding-left: 1.2em; display: grid; gap: 2px; }
-.map {
-  justify-self: start; display: inline-flex; align-items: center; gap: 6px;
-  font-size: 14px; font-weight: 500; text-decoration: none;
-  padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--paper);
-}
-.map:hover { border-color: var(--ice); }
-.map svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; }
-.maps { display: flex; flex-wrap: wrap; gap: 8px; }
+.sched { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.sched li { display: grid; grid-template-columns: 4.6em minmax(0, 1fr); gap: 12px; padding-block: 7px; border-top: 1px dashed var(--line); }
+.sched li:first-child { border-top: 0; padding-top: 0; }
+.sched time { font-family: var(--font-sign); font-weight: 600; font-size: 16px; color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 1px; white-space: nowrap; }
+.sched p { max-width: 36em; }
+.sched strong { font-weight: 700; }
+.sched .opt { color: var(--muted); font-size: 14.5px; }
+.planb { font-size: 14.5px; padding: 10px 12px; border-radius: 8px; background: var(--flag-soft); color: var(--ink); }
+.planb b { color: var(--flag); margin-right: 6px; }
+.day-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.map-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; text-decoration: none; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); color: var(--ice); cursor: pointer; font-family: var(--font-body); }
+.map-btn:hover { border-color: var(--ice); }
+.map-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; }
 @media (max-width: 560px) {
   .day { grid-template-columns: minmax(0, 1fr); gap: 10px; padding-block: 22px; }
-  .day-rail { display: flex; align-items: baseline; gap: 8px; }
-  .day-n, .day-n.narrow { font-size: 40px; margin-top: 0; }
-  .slots > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .day-rail { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .day-n, .day-n.narrow { font-size: 40px; }
+  .sched li { grid-template-columns: 3.8em minmax(0, 1fr); gap: 8px; }
 }
 
-/* Cost */
-.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
-table.cost { width: 100%; min-width: 600px; border-collapse: collapse; font-size: 15px; }
-.cost th, .cost td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
-.cost thead th { font-size: 13px; font-weight: 500; color: var(--muted); letter-spacing: 0.06em; background: var(--snow); }
-.cost td.num, .cost th.num { text-align: right; white-space: nowrap; font-family: var(--font-sign); font-weight: 600; font-size: 18px; font-variant-numeric: tabular-nums; }
-.cost thead th.num { font-family: var(--font-body); font-size: 13px; font-weight: 500; }
-.cost td.desc { color: var(--muted); font-size: 14px; }
-.cost .zero { color: var(--muted); }
-.cost .zero small { font-family: var(--font-body); font-size: 12px; font-weight: 400; margin-left: 4px; }
-.cost tfoot td { border-bottom: 0; background: var(--ice-soft); font-weight: 700; }
-.cost tfoot td.num { font-size: 22px; color: var(--ice); }
-.cost tfoot td.desc { color: var(--ink); font-weight: 400; }
+/* Resorts */
+.chart-panel { padding: 16px 16px 10px; position: relative; }
+.chart-title { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; align-items: baseline; margin-bottom: 4px; }
+.chart-title h3 { font-size: 17px; }
+.chart-title span { font-size: 13px; color: var(--muted); }
+#elev { display: block; width: 100%; height: auto; overflow: visible; }
+#elev text { font-family: var(--font-body); font-size: 12px; fill: var(--muted); }
+#elev .v { font-family: var(--font-sign); font-weight: 600; font-size: 14px; fill: var(--ink); }
+#elev .name { fill: var(--ink); font-size: 12.5px; font-weight: 500; }
+#elev .grid { stroke: var(--line); stroke-width: 1; }
+#elev .bar { fill: var(--ice); cursor: pointer; transform-box: fill-box; transform-origin: 50% 100%; }
+#elev .bar:hover, #elev .bar:focus { fill: var(--ink); outline: none; }
+#elev .grp { stroke: var(--line); stroke-width: 1; }
+#elev.grow .bar { animation: grow 0.9s cubic-bezier(.2,.7,.2,1) both; }
+#elev.grow .bar:nth-of-type(2) { animation-delay: .08s; }
+@keyframes grow { from { transform: scaleY(0.04); } to { transform: scaleY(1); } }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--paper); font-size: 13px; line-height: 1.5; padding: 8px 10px; border-radius: 6px; max-width: 220px; z-index: 2; font-variant-numeric: tabular-nums; }
+.tip b { display: block; font-size: 14px; }
+.resorts { margin-top: 18px; display: grid; gap: 14px; }
+.resort { padding: 18px; display: grid; gap: 12px; scroll-margin-top: calc(64px + env(safe-area-inset-top, 0px)); }
+.r-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.r-head h3 { font-size: 21px; }
+.r-head .jp { display: block; font-size: 13px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+.stats { margin: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.stats div { padding: 8px 8px 8px 0; min-width: 0; }
+.stats div + div { padding-left: 10px; border-left: 1px solid var(--line); }
+.stats dt { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+.stats dd { margin: 0; font-family: var(--font-sign); font-weight: 600; font-size: 20px; line-height: 1.2; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.stats dd small { font-family: var(--font-body); font-size: 12px; font-weight: 400; color: var(--muted); margin-left: 1px; }
+@media (max-width: 620px) {
+  .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .stats div:nth-child(4) { padding-left: 0; border-left: 0; }
+  .stats div:nth-child(n+4) { border-top: 1px solid var(--line); }
+}
+.r-body { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 18px; }
+@media (max-width: 720px) { .r-body { grid-template-columns: minmax(0, 1fr); gap: 12px; } }
+.r-body p { font-size: 15px; }
+.r-body ul { margin: 6px 0 0; padding-left: 1.2em; font-size: 15px; display: grid; gap: 2px; }
+.facts { margin: 0; display: grid; gap: 6px; font-size: 14px; align-content: start; }
+.facts div { display: grid; grid-template-columns: 4.6em minmax(0, 1fr); gap: 8px; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; }
 
-.calc { margin-top: 20px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: end; padding: 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
+/* Cost */
+.cost-bars { padding: 16px; display: grid; gap: 10px; }
+.cb { display: grid; grid-template-columns: 9em minmax(0, 1fr) 6.2em; gap: 12px; align-items: center; font-size: 14.5px; }
+.cb .track { height: 14px; position: relative; }
+.cb .fill { position: absolute; inset: 0 auto 0 0; background: var(--ice); border-radius: 0 4px 4px 0; transform-origin: 0 50%; transition: width .5s ease; }
+.cb.opt .fill { background: repeating-linear-gradient(135deg, var(--ice) 0 3px, transparent 3px 7px); border: 1px solid var(--ice); }
+.cost-bars.grow .fill { animation: growx .9s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes growx { from { transform: scaleX(0.03); } to { transform: scaleX(1); } }
+.cb .val { text-align: right; font-family: var(--font-sign); font-weight: 600; font-size: 17px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cb .lbl small { display: block; font-size: 12px; color: var(--muted); line-height: 1.3; }
+.cb.total { border-top: 2px solid var(--ink); padding-top: 10px; font-weight: 700; }
+.cb.total .val { font-size: 22px; color: var(--ice); }
+@media (max-width: 560px) { .cb { grid-template-columns: 7.2em minmax(0, 1fr) 5.4em; gap: 8px; } }
+.table-wrap { margin-top: 14px; overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
+table.cost { width: 100%; min-width: 620px; border-collapse: collapse; font-size: 14.5px; }
+.cost th, .cost td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.cost thead th { font-size: 13px; font-weight: 500; color: var(--muted); background: var(--snow); }
+.cost td.n { text-align: right; white-space: nowrap; font-family: var(--font-sign); font-weight: 600; font-size: 17px; font-variant-numeric: tabular-nums; }
+.cost td.d { color: var(--muted); font-size: 13.5px; }
+.cost tr.grp th { background: var(--snow); font-size: 13px; color: var(--ice); letter-spacing: 0.08em; }
+.cost tfoot td { border-bottom: 0; background: var(--ice-soft); font-weight: 700; }
+.cost tfoot td.n { font-size: 21px; color: var(--ice); }
+.excl { margin-top: 10px; font-size: 14px; color: var(--muted); }
+.calc { margin-top: 16px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: end; padding: 18px; }
 @media (max-width: 560px) { .calc { grid-template-columns: minmax(0, 1fr); } }
 .calc-q { font-weight: 500; margin-bottom: 10px; }
 .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
-.seg button {
-  appearance: none; border: 0; background: var(--paper); color: var(--ink);
-  font: 600 18px/1 var(--font-sign); padding: 10px 0; width: 48px; cursor: pointer;
-}
+.seg button { appearance: none; border: 0; background: var(--paper); color: var(--ink); font: 600 18px/1 var(--font-sign); padding: 10px 0; width: 48px; cursor: pointer; }
 .seg button + button { border-left: 1px solid var(--line); }
 .seg button[aria-checked="true"] { background: var(--ice); color: var(--paper); }
 .seg-hint { font-size: 13px; color: var(--muted); margin-top: 8px; }
 .calc-out { text-align: right; display: grid; gap: 2px; }
 @media (max-width: 560px) { .calc-out { text-align: left; } }
 .calc-k { font-size: 13px; color: var(--muted); letter-spacing: 0.06em; }
-.calc-v { font-family: var(--font-sign); font-weight: 700; font-size: 40px; line-height: 1.1; color: var(--ink); font-variant-numeric: tabular-nums; }
+.calc-v { font-family: var(--font-sign); font-weight: 700; font-size: 40px; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .calc-s { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
 
-/* Drive notes */
-.notes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 2px solid var(--ink); }
-.note { padding: 18px 18px 18px 0; display: grid; gap: 10px; align-content: start; min-width: 0; }
-.note + .note { padding-left: 18px; border-left: 1px solid var(--line); }
+/* Drive */
+.notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 2px solid var(--ink); }
+.note { padding: 18px 18px 18px 0; display: grid; gap: 8px; align-content: start; min-width: 0; border-bottom: 1px solid var(--line); }
+.note:nth-child(2n) { padding-left: 18px; border-left: 1px solid var(--line); }
 .note h3 { font-size: 18px; }
-.note p { font-size: 15px; color: var(--muted); }
-.note p strong { color: var(--ink); font-weight: 500; }
-.rules { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-.rules li { font-weight: 700; font-size: 17px; padding: 6px 10px; border-radius: 6px; background: var(--flag-soft); color: var(--flag); }
+.note p, .note li { font-size: 15px; color: var(--muted); }
+.note strong { color: var(--ink); font-weight: 500; }
+.note ul { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
+.rules { list-style: none; margin: 0; padding: 0 !important; display: flex; flex-wrap: wrap; gap: 6px; }
+.rules li { font-weight: 700; font-size: 16px; padding: 4px 10px; border-radius: 6px; background: var(--flag-soft); color: var(--flag) !important; }
 @media (max-width: 720px) {
   .notes { grid-template-columns: minmax(0, 1fr); }
-  .note, .note + .note { padding: 18px 0; border-left: 0; }
-  .note + .note { border-top: 1px solid var(--line); }
+  .note, .note:nth-child(2n) { padding: 16px 0; border-left: 0; }
 }
 
 /* Checklist */
-.checklist { list-style: none; margin: 0; padding: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; }
+.checklist { list-style: none; margin: 0; padding: 0; }
 .checklist li + li { border-top: 1px solid var(--line); }
 .checklist label { display: flex; gap: 12px; align-items: flex-start; padding: 13px 16px; cursor: pointer; }
 .checklist input { width: 20px; height: 20px; margin: 3px 0 0; accent-color: var(--ice); flex: none; }
@@ -245,79 +337,114 @@ table.cost { width: 100%; min-width: 600px; border-collapse: collapse; font-size
 .check-meta b { font-family: var(--font-sign); font-size: 16px; color: var(--ink); }
 .reset { appearance: none; border: 0; background: none; color: var(--ice); font: inherit; cursor: pointer; padding: 0; text-decoration: underline; }
 
-footer { padding-block: 24px 48px; border-top: 1px solid var(--line); margin-top: 16px; font-size: 13px; color: var(--muted); }
+footer { padding-block: 28px 48px; border-top: 1px solid var(--line); margin-top: 16px; font-size: 13px; color: var(--muted); display: grid; gap: 10px; }
+footer ul { margin: 0; padding-left: 1.2em; display: grid; gap: 2px; }
+footer a { word-break: break-word; }
+
+@media (prefers-reduced-motion: reduce) {
+  #elev.grow .bar, .cost-bars.grow .fill, #map .pulse.on { animation: none; }
+  .cb .fill { transition: none; }
+}
 </style>
 
 <nav class="nav" aria-label="章節">
   <div class="wrap">
     <a class="brand" href="#top">YUZAWA · HAKUBA</a>
     <div class="nav-links">
-      <a href="#route">路線</a>
+      <a href="#meet">集合</a>
+      <a href="#route">路線圖</a>
       <a href="#days">每日行程</a>
+      <a href="#resorts">雪場</a>
       <a href="#cost">費用</a>
-      <a href="#drive">自駕提醒</a>
-      <a href="#checklist">出發清單</a>
+      <a href="#drive">自駕須知</a>
+      <a href="#checklist">清單</a>
     </div>
+    <button type="button" class="lang" id="lang-btn" aria-label="切換簡體或繁體中文">简体</button>
   </div>
 </nav>
 
-<header class="hero wrap" id="top">
-  <p class="eyebrow">2月中旬 · 東京出發 · 4人自駕</p>
-  <h1>長野・湯澤・白馬<br>滑雪自駕 <span class="lat">7D6N</span></h1>
-  <p class="lede">專為<strong>4 人同行、中級滑雪程度</strong>安排的深冬行程。2 月中旬雪質最佳。先在新潟越後湯澤滑 4 天，享受粉雪與寬敞雪道；再轉往長野白馬滑 2 天，看北阿爾卑斯山景與現代化公園地形。</p>
-  <dl class="spec">
-    <div><dt>天數</dt><dd>7<small>天</small>6<small>夜</small></dd></div>
-    <div><dt>滑雪</dt><dd>6<small>天 · 5 座雪場</small></dd></div>
-    <div><dt>住宿</dt><dd>4+2<small>晚 湯澤／白馬</small></dd></div>
-    <div><dt>每人預估</dt><dd>¥184K<small>起</small></dd></div>
-  </dl>
-  <svg class="ridge" viewBox="0 0 880 56" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M0 52 L70 40 L120 46 L190 22 L230 34 L280 14 L330 30 L380 26 L430 44 L500 36 L560 10 L600 24 L640 18 L700 38 L760 30 L820 44 L880 40"/>
-    <path class="snowcap" d="M262 20 L280 14 L298 22 M544 16 L560 10 L578 17"/>
-  </svg>
-</header>
+<div class="hero-band">
+  <canvas id="snow" aria-hidden="true"></canvas>
+  <header class="hero wrap" id="top">
+    <div class="badges"><span class="badge">行程提案 v2</span><span class="eyebrow">長野集合 · 長野解散 · 4 人自駕</span></div>
+    <h1>長野・湯澤・白馬<br>滑雪自駕 <span class="lat">7D6N</span></h1>
+    <p class="lede">給 <strong>4 位中級滑雪者</strong>的深冬提案。大家各自前往<strong>長野站集合</strong>，一起取車開往新潟越後湯澤，滑 4 天粉雪與寬敞雪道；再移動到長野白馬滑 2 天，最後回長野站還車解散。前後行程各自安排。</p>
+    <dl class="spec">
+      <div><dt>建議日期</dt><dd class="num">2/14–2/20<small>2027</small></dd></div>
+      <div><dt>滑雪</dt><dd>6<small>天 · 5 座雪場</small></dd></div>
+      <div><dt>住宿</dt><dd>4+2<small>晚 湯澤／白馬</small></dd></div>
+      <div><dt>每人預估</dt><dd>¥20<small>萬左右</small></dd></div>
+    </dl>
+    <svg class="ridge" viewBox="0 0 880 56" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 52 L70 40 L120 46 L190 22 L230 34 L280 14 L330 30 L380 26 L430 44 L500 36 L560 10 L600 24 L640 18 L700 38 L760 30 L820 44 L880 40"/>
+      <path class="snowcap" d="M262 20 L280 14 L298 22 M544 16 L560 10 L578 17"/>
+    </svg>
+  </header>
+</div>
 
 <main>
+  <section class="section wrap" id="meet">
+    <div class="section-head">
+      <p class="kicker">MEET &amp; SPLIT</p>
+      <h2>長野集合，長野解散</h2>
+      <p class="sub">日期是建議值：避開 2/6 開始的農曆新年連假，以及日本 2/11、2/23 兩個國定假日。滑雪日多落在平日，雪場和住宿都比較好訂。整段行程可以一起往前或往後挪。</p>
+    </div>
+    <div class="meet">
+      <div class="panel">
+        <p class="kicker">DAY 1 · 2/14（日）</p>
+        <p class="when num">11:00<small>長野站 善光寺口</small></p>
+        <h3>集合、吃蕎麥麵、取車</h3>
+        <p>午餐吃<strong>信州蕎麥麵</strong>，12:00 到站前租車行取車，12:30 一起開往越後湯澤。</p>
+      </div>
+      <div class="panel">
+        <p class="kicker">DAY 7 · 2/20（六）</p>
+        <p class="when num">16:30<small>長野站</small></p>
+        <h3>還車、解散</h3>
+        <p>滑完栂池後開回長野，<strong>加滿油還車</strong>，在長野站解散。之後各自回東京或繼續旅行。</p>
+      </div>
+    </div>
+    <div class="free">
+      <div><h4>怎麼到長野</h4><p>東京站搭<strong>北陸新幹線</strong>約 1 小時 20 分，指定席單程 ¥8,450。從成田或羽田機場出發，先到東京站轉車。</p></div>
+      <div><h4>想提早一天到</h4><p>住長野站周邊，逛<strong>善光寺</strong>；或去<strong>地獄谷野猿公苑</strong>看泡溫泉的雪猴，從長野出發約 1 小時。</p></div>
+      <div><h4>結束後延伸</h4><p>回東京約 1 小時 20 分；往西搭北陸新幹線約 1 小時就到<strong>金澤</strong>，可以接北陸之旅。</p></div>
+    </div>
+  </section>
+
   <section class="section wrap" id="route">
     <div class="section-head">
-      <p class="kicker">ROUTE</p>
-      <h2>交通動線</h2>
+      <p class="kicker">ROUTE MAP</p>
+      <h2>路線動態地圖</h2>
+      <p class="sub">按「播放全程」看 7 天的移動路線，或點單日看當天去哪裡。地圖為示意，道路依實際路線簡化。</p>
     </div>
-    <div class="route-grid">
-      <div>
-        <ol class="route">
-          <li class="stop"><b>東京</b><small>出發</small></li>
-          <li class="leg rail"><span class="mode">北陸新幹線</span>Kagayaki／Hakutaka，約 1 小時 20 分</li>
-          <li class="stop"><b>長野站</b><small>取車</small></li>
-          <li class="leg"><span class="mode">信越自動車道</span>約 1.5 ～ 2 小時</li>
-          <li class="stop base"><b>越後湯澤</b><small>住 4 晚 · Day 1–4</small></li>
-          <li class="leg"><span class="mode">自駕西行</span>經長野方向，約 2.5 小時</li>
-          <li class="stop base"><b>白馬村</b><small>住 2 晚 · Day 5–6</small></li>
-          <li class="leg"><span class="mode">自駕</span>約 1 小時</li>
-          <li class="stop"><b>長野站</b><small>加滿油 · 還車</small></li>
-          <li class="leg rail"><span class="mode">北陸新幹線</span>返回</li>
-          <li class="stop"><b>東京</b><small>賦歸</small></li>
-        </ol>
-        <div class="legend"><span><i></i>新幹線</span><span><i class="car"></i>自駕</span></div>
+    <div class="panel map-panel">
+      <div class="map-tools" role="group" aria-label="選擇日期">
+        <button type="button" class="chip" data-day="all" aria-pressed="true">全部</button>
+        <button type="button" class="chip" data-day="d1" aria-pressed="false">D1</button>
+        <button type="button" class="chip" data-day="d2" aria-pressed="false">D2</button>
+        <button type="button" class="chip" data-day="d3" aria-pressed="false">D3–4</button>
+        <button type="button" class="chip" data-day="d5" aria-pressed="false">D5</button>
+        <button type="button" class="chip" data-day="d6" aria-pressed="false">D6</button>
+        <button type="button" class="chip" data-day="d7" aria-pressed="false">D7</button>
+        <button type="button" class="chip play" id="play"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0 L9 5 L1 10 Z"/></svg><span id="play-label">播放全程</span></button>
       </div>
-      <div class="areas">
-        <div class="area">
-          <div class="area-top"><h3>越後湯澤 4 天</h3><span class="pref">新潟縣</span></div>
-          <ul>
-            <li><span>岩原滑雪場</span><span>1 DAY</span></li>
-            <li><span>神樂滑雪場</span><span>2 DAYS</span></li>
-            <li><span>石打丸山滑雪場</span><span>1 DAY</span></li>
-          </ul>
-        </div>
-        <div class="area">
-          <div class="area-top"><h3>白馬 2 天</h3><span class="pref">長野縣</span></div>
-          <ul>
-            <li><span>Hakuba 47</span><span>1 DAY</span></li>
-            <li><span>栂池高原滑雪場</span><span>1 DAY</span></li>
-          </ul>
-        </div>
-        <p class="car-note">租車建議：<strong>4WD SUV 或 7 人座 MPV</strong>，方便放置 4 套大型雪具與行李。</p>
+      <div class="map-wrap">
+        <svg id="map" viewBox="0 0 660 569" role="img" aria-label="長野、越後湯澤、白馬一帶的行程路線圖"></svg>
+        <div class="hud" id="hud" aria-live="polite"><b id="hud-day">7 天全程</b><span id="hud-text">自駕總距離約 650 km，長途移動集中在 Day 1 和 Day 5。</span></div>
       </div>
+      <div class="legend">
+        <span><svg viewBox="0 0 14 14" aria-hidden="true"><path class="lg-road" d="M1 7 H13"/></svg>自駕路線</span>
+        <span><svg viewBox="0 0 14 14" aria-hidden="true"><path class="lg-resort" d="M7 1 L13 12 H1 Z"/></svg>雪場</span>
+        <span><svg viewBox="0 0 14 14" aria-hidden="true"><rect class="lg-stay" x="2.5" y="2.5" width="9" height="9"/></svg>住宿地</span>
+        <span><svg viewBox="0 0 14 14" aria-hidden="true"><circle class="lg-station" cx="7" cy="7" r="5"/></svg>長野站（集合、解散）</span>
+      </div>
+    </div>
+    <div class="legs">
+      <div><b>D1</b><p>長野站 → 越後湯澤</p><small>約 230 km · 2.5–3 小時</small></div>
+      <div><b>D2</b><p>湯澤 ↔ 岩原</p><small>約 5 km · 10 分</small></div>
+      <div><b>D3–4</b><p>湯澤 ↔ 神樂（三俣）</p><small>約 15 km · 25–30 分</small></div>
+      <div><b>D5</b><p>石打丸山 → 白馬村</p><small>約 265 km · 3–3.5 小時</small></div>
+      <div><b>D6</b><p>白馬村 ↔ Hakuba 47</p><small>約 5 km · 10 分</small></div>
+      <div><b>D7</b><p>栂池 → 長野站還車</p><small>約 70 km · 約 1.5 小時</small></div>
     </div>
   </section>
 
@@ -325,121 +452,302 @@ footer { padding-block: 24px 48px; border-top: 1px solid var(--line); margin-top
     <div class="section-head">
       <p class="kicker">ITINERARY</p>
       <h2>每日行程</h2>
+      <p class="sub">時間是建議值。2 月中旬日落約 17:20，長距離山路都排在天黑前開完。</p>
     </div>
     <ol class="days">
       <li class="day move" id="day-1">
-        <div class="day-rail"><span class="day-k">DAY</span><span class="day-n">1</span></div>
+        <div class="day-rail"><span class="day-k">DAY</span><span class="day-n">1</span><span class="day-date">2/14<small>日</small></span></div>
         <div class="day-body">
-          <div class="tags"><span class="tag move">移動日</span><span class="tag">住 越後湯澤</span></div>
-          <h3>東京出發 → 長野取車 → 越後湯澤</h3>
-          <dl class="slots">
-            <div><dt>上午</dt><dd>搭早班<strong>北陸新幹線</strong>（Kagayaki 或 Hakutaka，約 1 小時 20 分）抵達<strong>長野車站</strong>。</dd></div>
-            <div><dt>中午</dt><dd>在長野車站周邊大型租車行（Toyota、ORIX、Nippon 等）取車，務必確認：
-              <ul>
-                <li>勾選 <strong>4WD 四輪驅動</strong> 與 <strong>雪胎（Studless）</strong></li>
-                <li>租借 <strong>ETC 卡</strong>，並詢問外國人高速公路專案（<strong>JEP Pass</strong>）</li>
-              </ul>
-            </dd></div>
-            <div><dt>下午</dt><dd>行李與雪具上車，走信越自動車道開往新潟縣<strong>越後湯澤</strong>（約 1.5 ～ 2 小時）。</dd></div>
-            <div><dt>晚上</dt><dd>入住越後湯澤溫泉區飯店。品嚐當地知名的「爆彈御飯糰」與在地清酒，推薦車站內的「唎酒番所」。</dd></div>
-          </dl>
+          <div class="tags"><span class="tag move">移動日 · 約 230 km</span><span class="tag">住 越後湯澤</span></div>
+          <h3>長野站集合 → 取車 → 越後湯澤</h3>
+          <ol class="sched">
+            <li><time>11:00</time><p><strong>長野站善光寺口集合</strong>。午餐吃信州蕎麥麵，順便在站內買零食和飲料。</p></li>
+            <li><time>12:00</time><p>站前租車行取車。確認 <strong>4WD、雪胎、ETC 卡、免責險</strong>，拍下車身四周原有刮痕，導航先設好住宿電話或 Mapcode。</p></li>
+            <li><time>12:30</time><p>出發：上信越道 → 上越 JCT → 北陸道 → 長岡 JCT → 關越道湯澤 IC。中途可在北陸道米山 SA 休息看日本海。</p></li>
+            <li><time>15:30</time><p>抵達越後湯澤，check-in，去超市補給早餐和飲料。</p></li>
+            <li><time>晚上</time><p>越後湯澤站內「ぽんしゅ館」：吃<strong>爆彈飯糰</strong>，在「唎酒番所」試喝新潟各酒造的清酒。</p></li>
+            <li><time>選配</time><p class="opt">體力還夠的話，石打丸山有夜滑（2025-26 季為 16:00–20:00，至 2/28）。</p></li>
+          </ol>
         </div>
       </li>
 
       <li class="day" id="day-2">
-        <div class="day-rail"><span class="day-k">DAY</span><span class="day-n">2</span></div>
+        <div class="day-rail"><span class="day-k">DAY</span><span class="day-n">2</span><span class="day-date">2/15<small>一</small></span></div>
         <div class="day-body">
           <div class="tags"><span class="tag ski">滑雪 1／6</span><span class="tag">湯澤</span><span class="tag">住 越後湯澤</span></div>
           <h3>岩原滑雪場<span class="en">Iwappara</span></h3>
-          <dl class="slots">
-            <div><dt>滑雪重點</dt><dd>擁有日本罕見、極為寬廣的超寬廊式斜坡，視野極佳，很適合中級者練習流暢的 S-turn 與 Carving。</dd></div>
-            <div><dt>特色體驗</dt><dd>傍晚可體驗規模盛大的<strong>夜滑（Night Skiing）</strong>，燈光下雪道視野清晰，氣氛浪漫。</dd></div>
-          </dl>
-          <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=%E5%B2%A9%E5%8E%9F%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4&amp;query_place_id=ChIJT6tVFAEDHmAR2qmwlNiVyIo" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>岩原滑雪場 地圖</a>
+          <ol class="sched">
+            <li><time>08:30</time><p>出發，車程約 10 分。</p></li>
+            <li><time>09:00</time><p>第一天<strong>暖身日</strong>。主雪道寬敞、坡度平順，適合大家找回腳感、練 S-turn 與 Carving。天氣好時正面就是谷川連峰。</p></li>
+            <li><time>12:00</time><p>山腳餐廳午餐。</p></li>
+            <li><time>傍晚</time><p class="opt">想多滑可加夜滑（2025-26 季為 17:00–19:00，週六到 20:00）。</p></li>
+            <li><time>晚上</time><p>湯澤溫泉泡湯放鬆，早點睡，明天要早起去神樂。</p></li>
+          </ol>
+          <div class="day-links"><button type="button" class="map-btn" data-goto="iwappara">看雪場介紹</button></div>
         </div>
       </li>
 
       <li class="day" id="day-3">
-        <div class="day-rail"><span class="day-k">DAY</span><span class="day-n narrow">3–4</span></div>
+        <div class="day-rail"><span class="day-k">DAY</span><span class="day-n narrow">3–4</span><span class="day-date">2/16–17<small>二三</small></span></div>
         <div class="day-body">
           <div class="tags"><span class="tag ski">滑雪 2–3／6</span><span class="tag">湯澤</span><span class="tag">住 越後湯澤</span></div>
           <h3>神樂滑雪場 連滑 2 天<span class="en">Kagura</span></h3>
-          <dl class="slots">
-            <div><dt>滑雪重點</dt><dd>海拔較高，2 月中旬雪質極為輕盈乾爽，粉雪體驗絕佳。與苗場相連，有豐富的中高級林間道與大片非壓雪區，是提升技術的黃金場地。</dd></div>
-            <div><dt>餐飲建議</dt><dd>中午在山頂餐廳吃熱騰騰的日式拉麵或咖哩飯，補充體力。</dd></div>
-          </dl>
-          <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=%E3%81%8B%E3%81%90%E3%82%89%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4&amp;query_place_id=ChIJMWthLKwAHmARHgO8fWUWqIU" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>神樂滑雪場 地圖</a>
+          <ol class="sched">
+            <li><time>07:45</time><p>出發，國道 17 號往南約 25–30 分，車停<strong>三俣（みつまた）站</strong>停車場，搭纜車上山。</p></li>
+            <li><time>Day 3</time><p>先滑三俣區熟悉環境，再往上到<strong>神樂主雪道</strong>。海拔最高 1,845 m，2 月雪質乾爽，是這趟粉雪最好的兩天。中午在山上吃拉麵或咖哩飯。</p></li>
+            <li><time>Day 4</time><p>挑戰神樂上部的林間道與非壓雪區。想換場的話，可買<strong>苗場・神樂共通券</strong>，搭世界最長級的「ドラゴンドラ」纜車去苗場（運行日以官網為準）。</p></li>
+            <li><time>15:30</time><p>下山回湯澤。週二、週三是平日，排隊少。</p></li>
+          </ol>
+          <p class="planb"><b>強風備案</b>神樂海拔高，上部纜車遇強風會停。可改去新幹線站直通的 GALA 湯澤，或再滑一天石打丸山。</p>
+          <div class="day-links"><button type="button" class="map-btn" data-goto="kagura">看雪場介紹</button></div>
         </div>
       </li>
 
       <li class="day" id="day-5">
-        <div class="day-rail"><span class="day-k">DAY</span><span class="day-n">5</span></div>
+        <div class="day-rail"><span class="day-k">DAY</span><span class="day-n">5</span><span class="day-date">2/18<small>四</small></span></div>
         <div class="day-body">
-          <div class="tags"><span class="tag ski">滑雪 4／6</span><span class="tag move">移動 約 2.5 小時</span><span class="tag">住 白馬村</span></div>
-          <h3>石打丸山 → 移動至白馬村</h3>
-          <dl class="slots">
-            <div><dt>上午</dt><dd>前往<strong>石打丸山滑雪場</strong>（或依喜好改去 GALA 湯澤）。有新穎的複合式纜車（Conbi Lift）與極佳的雪道景觀，是湯澤的完美收尾。</dd></div>
-            <div><dt>下午</dt><dd>退房後，四人合力把裝備上車，從湯澤往西開回長野方向，再接往白馬村（總車程約 2.5 小時），沿途欣賞冬季山岳風光。</dd></div>
-            <div><dt>晚上</dt><dd>入住白馬村，建議住<strong>八方尾根</strong>或 <strong>Echoland</strong> 附近，感受國際化滑雪小鎮氣氛與異國美食。</dd></div>
-          </dl>
-          <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=%E7%9F%B3%E6%89%93%E4%B8%B8%E5%B1%B1%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4&amp;query_place_id=ChIJ108s89YAHmARq1uR4sO9_4I" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>石打丸山滑雪場 地圖</a>
+          <div class="tags"><span class="tag ski">滑雪 4／6 · 半天</span><span class="tag move">移動 約 265 km</span><span class="tag">住 白馬村</span></div>
+          <h3>石打丸山半天 → 移動到白馬</h3>
+          <ol class="sched">
+            <li><time>07:30</time><p>退房，雪具和行李上車。</p></li>
+            <li><time>08:00</time><p>往北約 15 分到<strong>石打丸山</strong>，剛好在去白馬的高速入口旁。</p></li>
+            <li><time>08:30</time><p>滑半天。視野開闊，雪道多，和 GALA 湯澤、湯澤高原相連。</p></li>
+            <li><time>12:30</time><p>午餐後出發：關越道 → 長岡 JCT → 北陸道 → 糸魚川 IC → 國道 148 號南下白馬，約 3–3.5 小時。</p></li>
+            <li><time>16:30</time><p>天黑前抵達白馬村，入住<strong>八方或 Echoland 一帶</strong>，晚餐吃村裡的異國料理。</p></li>
+          </ol>
+          <p class="planb"><b>路況備案</b>國道 148 號大雪時可能管制。出發前查路況，不通就改走北陸道 → 上越 JCT → 上信越道 → 長野 → 白馬，約多 30 分。</p>
+          <div class="day-links"><button type="button" class="map-btn" data-goto="ishiuchi">看雪場介紹</button></div>
         </div>
       </li>
 
       <li class="day" id="day-6">
-        <div class="day-rail"><span class="day-k">DAY</span><span class="day-n">6</span></div>
+        <div class="day-rail"><span class="day-k">DAY</span><span class="day-n">6</span><span class="day-date">2/19<small>五</small></span></div>
         <div class="day-body">
           <div class="tags"><span class="tag ski">滑雪 5／6</span><span class="tag">白馬</span><span class="tag">住 白馬村</span></div>
-          <h3>Hakuba 47 冬季運動公園</h3>
-          <dl class="slots">
-            <div><dt>滑雪重點</dt><dd>與五龍雪場山頂相通，是白馬地區最受單板（Snowboarder）與歐美旅客喜愛的雪場。有極佳的花式公園道具、陡峭的樹林區，以及壯麗的北阿爾卑斯山背景。</dd></div>
-          </dl>
-          <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=HAKUBA47%20Winter%20Sports%20Park&amp;query_place_id=ChIJh07LxNjR918Rbbk4bjyrGZ8" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Hakuba 47 地圖</a>
+          <h3>Hakuba 47 ＋ 白馬五竜</h3>
+          <ol class="sched">
+            <li><time>08:30</time><p>出發，車程約 10 分。</p></li>
+            <li><time>09:00</time><p>買<strong>五竜・47 共通 1 日券</strong>，兩個雪場山頂相通。47 的地形公園和樹林區很受單板玩家喜愛；想輕鬆滑就去五竜的寬坡，北阿爾卑斯山就在背後。</p></li>
+            <li><time>15:30</time><p>回村裡，去八方溫泉泡湯。</p></li>
+            <li><time>晚上</time><p>白馬村餐廳選擇多，記得提前訂位，週五晚上人多。</p></li>
+          </ol>
+          <div class="day-links"><button type="button" class="map-btn" data-goto="hakuba47">看雪場介紹</button></div>
         </div>
       </li>
 
-      <li class="day" id="day-7">
-        <div class="day-rail"><span class="day-k">DAY</span><span class="day-n">7</span></div>
+      <li class="day move" id="day-7">
+        <div class="day-rail"><span class="day-k">DAY</span><span class="day-n">7</span><span class="day-date">2/20<small>六</small></span></div>
         <div class="day-body">
-          <div class="tags"><span class="tag ski">滑雪 6／6</span><span class="tag move">還車 · 返回東京</span></div>
-          <h3>栂池高原 → 長野還車 → 東京</h3>
-          <dl class="slots">
-            <div><dt>白天</dt><dd>前往<strong>栂池高原滑雪場</strong>。下半部是日本數一數二、寬達 1.2 公里的超寬緩坡，滑起來毫無壓力；上半部也有豐富的林間路線。</dd></div>
-            <div><dt>傍晚</dt><dd>結束滑雪後開回長野市區（約 1 小時），<strong>加滿油</strong>後到租車行<strong>還車</strong>。</dd></div>
-            <div><dt>夜晚</dt><dd>在長野車站吃晚餐、買伴手禮，搭新幹線返回東京。</dd></div>
-          </dl>
-          <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=%E6%A0%82%E6%B1%A0%E9%AB%98%E5%8E%9F%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4&amp;query_place_id=ChIJJaFBg9zM918RLsWB-s8oaI0" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>栂池高原滑雪場 地圖</a>
+          <div class="tags"><span class="tag ski">滑雪 6／6</span><span class="tag move">還車 · 解散</span></div>
+          <h3>栂池高原 → 長野站解散</h3>
+          <ol class="sched">
+            <li><time>07:30</time><p>退房、裝車。</p></li>
+            <li><time>08:00</time><p>開往栂池約 15–20 分。</p></li>
+            <li><time>08:30</time><p>滑<strong>栂池高原</strong>。下半部「鐘の鳴る丘」寬超過 1.2 km、坡度平緩，最後一天輕鬆滑、拍合照最適合。</p></li>
+            <li><time>14:00</time><p>出發，走オリンピック道路回長野，約 1 小時到 1 小時 15 分。</p></li>
+            <li><time>15:30</time><p>長野站附近<strong>加滿油</strong>，16:00 還車。</p></li>
+            <li><time>16:30</time><p><strong>長野站解散</strong>。回東京搭北陸新幹線約 1 小時 20 分，或各自繼續旅行。</p></li>
+          </ol>
+          <div class="day-links"><button type="button" class="map-btn" data-goto="tsugaike">看雪場介紹</button></div>
         </div>
       </li>
     </ol>
+  </section>
+
+  <section class="section wrap" id="resorts">
+    <div class="section-head">
+      <p class="kicker">SKI RESORTS</p>
+      <h2>5 座雪場介紹</h2>
+      <p class="sub">數字取自雪場與觀光協會公開資料，不同來源略有差異。票價為成人 1 日券窗口價，2026-27 季未公布的先用 2025-26 季價格。</p>
+    </div>
+    <div class="panel chart-panel">
+      <div class="chart-title"><h3>雪場標高與落差</h3><span>長條＝山腳到山頂（m），點長條看細節</span></div>
+      <svg id="elev" viewBox="0 0 640 300" role="img" aria-label="5 座雪場的山腳與山頂標高"></svg>
+      <div class="tip" id="tip" hidden></div>
+    </div>
+
+    <div class="resorts">
+      <article class="panel resort" id="r-iwappara">
+        <div class="r-head">
+          <h3>岩原滑雪場<span class="jp">岩原スキー場 · Iwappara · 新潟縣湯澤町</span></h3>
+          <div class="tags"><span class="tag ski">Day 2</span><span class="tag">新手到中級</span></div>
+        </div>
+        <dl class="stats">
+          <div><dt>山頂</dt><dd>985<small>m</small></dd></div>
+          <div><dt>山腳</dt><dd>400<small>m</small></dd></div>
+          <div><dt>落差</dt><dd>585<small>m</small></dd></div>
+          <div><dt>最長滑走</dt><dd>4.0<small>km</small></dd></div>
+          <div><dt>雪道</dt><dd>20<small>條</small></dd></div>
+        </dl>
+        <div class="r-body">
+          <div>
+            <p>離越後湯澤最近的大型雪場之一，以寬敞的主雪道出名，視野開闊，正面是谷川連峰。坡度變化平順，適合第一天暖身；也有最大斜度 35° 的上級道給想挑戰的人。</p>
+            <ul><li>中級者練轉彎節奏的好地方</li><li>有夜滑，適合不想太早收工的人</li></ul>
+          </div>
+          <dl class="facts">
+            <div><dt>1 日券</dt><dd class="num">¥5,500（2025-26 季）</dd></div>
+            <div><dt>夜滑</dt><dd>有（2025-26 季 17:00–19:00）</dd></div>
+            <div><dt>交通</dt><dd>湯澤 IC 約 5 分，越後湯澤站約 10–12 分</dd></div>
+          </dl>
+        </div>
+        <div class="day-links">
+          <a class="map-btn" href="https://www.google.com/maps/search/?api=1&amp;query=%E5%B2%A9%E5%8E%9F%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4&amp;query_place_id=ChIJT6tVFAEDHmAR2qmwlNiVyIo" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Google 地圖</a>
+          <a class="map-btn" href="https://iwa-ppara.com/" target="_blank" rel="noopener">官方網站 ↗</a>
+        </div>
+      </article>
+
+      <article class="panel resort" id="r-kagura">
+        <div class="r-head">
+          <h3>神樂滑雪場<span class="jp">かぐらスキー場 · Kagura · 新潟縣湯澤町</span></h3>
+          <div class="tags"><span class="tag ski">Day 3–4</span><span class="tag">中級到上級</span><span class="tag">粉雪</span></div>
+        </div>
+        <dl class="stats">
+          <div><dt>山頂</dt><dd>1,845<small>m</small></dd></div>
+          <div><dt>山腳</dt><dd>620<small>m</small></dd></div>
+          <div><dt>落差</dt><dd>1,225<small>m</small></dd></div>
+          <div><dt>最長滑走</dt><dd>6.0<small>km</small></dd></div>
+          <div><dt>雪道</dt><dd>30+<small>條</small></dd></div>
+        </dl>
+        <div class="r-body">
+          <div>
+            <p>由三俣、神樂、田代三區組成，是湯澤一帶海拔最高、雪質最好的雪場，雪季一直開到 5 月。上部有大片林間道和非壓雪區，中級者想進步，這兩天最有收穫。</p>
+            <ul><li>三俣站有大型纜車，從停車場直接上山</li><li>可經「ドラゴンドラ」連到苗場</li><li>高處受風影響大，停駛時改滑下部或換場</li></ul>
+          </div>
+          <dl class="facts">
+            <div><dt>1 日券</dt><dd class="num">¥7,500（2025-26 季，2026-27 預計調漲）</dd></div>
+            <div><dt>夜滑</dt><dd>無</dd></div>
+            <div><dt>交通</dt><dd>越後湯澤經國道 17 號約 25–30 分，停三俣站</dd></div>
+          </dl>
+        </div>
+        <div class="day-links">
+          <a class="map-btn" href="https://www.google.com/maps/search/?api=1&amp;query=%E3%81%8B%E3%81%90%E3%82%89%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4&amp;query_place_id=ChIJMWthLKwAHmARHgO8fWUWqIU" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Google 地圖</a>
+          <a class="map-btn" href="https://www.princehotels.co.jp/ski/kagura/winter/coursemap/" target="_blank" rel="noopener">官方雪道圖 ↗</a>
+        </div>
+      </article>
+
+      <article class="panel resort" id="r-ishiuchi">
+        <div class="r-head">
+          <h3>石打丸山滑雪場<span class="jp">石打丸山スキー場 · Ishiuchi Maruyama · 新潟縣南魚沼市</span></h3>
+          <div class="tags"><span class="tag ski">Day 5 半天</span><span class="tag">全程度</span></div>
+        </div>
+        <dl class="stats">
+          <div><dt>山頂</dt><dd>920<small>m</small></dd></div>
+          <div><dt>山腳</dt><dd>256<small>m</small></dd></div>
+          <div><dt>落差</dt><dd>664<small>m</small></dd></div>
+          <div><dt>最長滑走</dt><dd>4.0<small>km</small></dd></div>
+          <div><dt>雪道</dt><dd>23<small>條</small></dd></div>
+        </dl>
+        <div class="r-body">
+          <div>
+            <p>歷史悠久的大型雪場，雪道多、景觀開闊，和 GALA 湯澤、湯澤高原相連成「湯澤 Snow Link」。位置就在關越道鹽澤石打 IC 旁，滑完半天直接上高速去白馬，不用繞路。</p>
+            <ul><li>夜滑規模大，Day 1 晚上也能來</li><li>最大斜度 33°，上級道也有挑戰性</li></ul>
+          </div>
+          <dl class="facts">
+            <div><dt>1 日券</dt><dd class="num">¥8,500（2026-27 季報導價）</dd></div>
+            <div><dt>夜滑</dt><dd>有（2025-26 季 16:00–20:00，至 2/28）</dd></div>
+            <div><dt>交通</dt><dd>越後湯澤往北約 15 分</dd></div>
+          </dl>
+        </div>
+        <div class="day-links">
+          <a class="map-btn" href="https://www.google.com/maps/search/?api=1&amp;query=%E7%9F%B3%E6%89%93%E4%B8%B8%E5%B1%B1%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4&amp;query_place_id=ChIJ108s89YAHmARq1uR4sO9_4I" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Google 地圖</a>
+          <a class="map-btn" href="https://niigata-kankou.or.jp/ski/10693" target="_blank" rel="noopener">新潟觀光介紹 ↗</a>
+        </div>
+      </article>
+
+      <article class="panel resort" id="r-hakuba47">
+        <div class="r-head">
+          <h3>Hakuba 47 冬季運動公園<span class="jp">Hakuba47 Winter Sports Park · 長野縣白馬村</span></h3>
+          <div class="tags"><span class="tag ski">Day 6</span><span class="tag">中級到上級</span><span class="tag">地形公園</span></div>
+        </div>
+        <dl class="stats">
+          <div><dt>山頂</dt><dd>1,614<small>m</small></dd></div>
+          <div><dt>山腳</dt><dd>820<small>m</small></dd></div>
+          <div><dt>落差</dt><dd>794<small>m</small></dd></div>
+          <div><dt>最長滑走</dt><dd>6.4<small>km</small></dd></div>
+          <div><dt>相連</dt><dd>五竜</dd></div>
+        </dl>
+        <div class="r-body">
+          <div>
+            <p>和 Able 白馬五竜山頂相通，兩邊共用 1 日券，合起來是白馬谷規模最大的連通雪區之一。47 以地形公園、陡坡和樹林區出名；五竜那側坡面寬，適合想輕鬆滑的人。</p>
+            <ul><li>單板玩家首選</li><li>北阿爾卑斯山景就在背後</li></ul>
+          </div>
+          <dl class="facts">
+            <div><dt>1 日券</dt><dd class="num">¥10,000（2026-27 季，含 ¥500 IC 卡押金；線上加值 ¥8,200）</dd></div>
+            <div><dt>交通</dt><dd>白馬村約 10 分</dd></div>
+          </dl>
+        </div>
+        <div class="day-links">
+          <a class="map-btn" href="https://www.google.com/maps/search/?api=1&amp;query=HAKUBA47%20Winter%20Sports%20Park&amp;query_place_id=ChIJh07LxNjR918Rbbk4bjyrGZ8" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Google 地圖</a>
+          <a class="map-btn" href="https://www.hakubaescal.com/winter-en/tickets/lift/" target="_blank" rel="noopener">官方票價 ↗</a>
+        </div>
+      </article>
+
+      <article class="panel resort" id="r-tsugaike">
+        <div class="r-head">
+          <h3>栂池高原滑雪場<span class="jp">つがいけマウンテンリゾート · Tsugaike · 長野縣小谷村</span></h3>
+          <div class="tags"><span class="tag ski">Day 7</span><span class="tag">新手到中級</span></div>
+        </div>
+        <dl class="stats">
+          <div><dt>山頂</dt><dd>1,704<small>m</small></dd></div>
+          <div><dt>山腳</dt><dd>800<small>m</small></dd></div>
+          <div><dt>落差</dt><dd>904<small>m</small></dd></div>
+          <div><dt>最長滑走</dt><dd>5.0<small>km</small></dd></div>
+          <div><dt>雪道</dt><dd>14<small>條</small></dd></div>
+        </dl>
+        <div class="r-body">
+          <div>
+            <p>下半部的「鐘の鳴る丘」寬超過 1.2 km、坡度平緩，滑起來沒有壓力；上半部有長距離林間道，從山頂一路滑到底約 5 km。雪道約一半是初級，最後一天放鬆滑、拍照最適合。</p>
+            <ul><li>初級 50%、中級 30%、上級 20%</li><li>最大斜度 35°</li></ul>
+          </div>
+          <dl class="facts">
+            <div><dt>1 日券</dt><dd class="num">¥9,800（2026-27 季）</dd></div>
+            <div><dt>交通</dt><dd>白馬村往北約 15–20 分</dd></div>
+          </dl>
+        </div>
+        <div class="day-links">
+          <a class="map-btn" href="https://www.google.com/maps/search/?api=1&amp;query=%E6%A0%82%E6%B1%A0%E9%AB%98%E5%8E%9F%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4&amp;query_place_id=ChIJJaFBg9zM918RLsWB-s8oaI0" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Google 地圖</a>
+          <a class="map-btn" href="https://hakubavalley.com/en/" target="_blank" rel="noopener">Hakuba Valley 官網 ↗</a>
+        </div>
+      </article>
+    </div>
   </section>
 
   <section class="section wrap" id="cost">
     <div class="section-head">
       <p class="kicker">BUDGET</p>
       <h2>費用預估</h2>
-      <p class="sub">每人金額，以 4 人分攤計算，單位日圓。實際花費依當季匯率與早鳥票價而定。</p>
+      <p class="sub">每人金額，4 人分攤，單位日圓。租車與住宿是依 2 月旺季行情的估算，請以實際報價為準。</p>
     </div>
-    <div class="table-wrap">
-      <table class="cost">
-        <thead>
-          <tr><th scope="col">費用項目</th><th scope="col" class="num">自備雪具（每人）</th><th scope="col" class="num">全程租賃（每人）</th><th scope="col">說明</th></tr>
-        </thead>
-        <tbody>
-          <tr><th scope="row">東京 ↔ 長野 新幹線指定席</th><td class="num">¥16,000</td><td class="num">¥16,000</td><td class="desc">來回車票</td></tr>
-          <tr><th scope="row">交通：SUV 4WD 租車 + 油資 + JEP Pass</th><td class="num">¥25,000</td><td class="num">¥25,000</td><td class="desc">4 人分攤 7 天車資、跨縣市油資與過路費</td></tr>
-          <tr><th scope="row">6 天滑雪纜車票</th><td class="num">¥48,000</td><td class="num">¥48,000</td><td class="desc">岩原 1 + 神樂 2 + 石打丸山 1 + 47 1 + 栂池 1</td></tr>
-          <tr><th scope="row">6 天雪具與雪衣租賃</th><td class="num zero">¥0<small>自備</small></td><td class="num">¥36,000</td><td class="desc">全套雪板、雪鞋、雪衣褲</td></tr>
-          <tr><th scope="row">住宿 6 晚（湯澤 4 + 白馬 2）</th><td class="num">¥60,000</td><td class="num">¥60,000</td><td class="desc">溫泉旅館與滑雪度假村，4 人分攤</td></tr>
-          <tr><th scope="row">餐飲與日常花費（7 天）</th><td class="num">¥35,000</td><td class="num">¥35,000</td><td class="desc">雪場簡餐、在地居酒屋、溫泉入湯稅</td></tr>
-        </tbody>
-        <tfoot>
-          <tr><td>總計預估</td><td class="num">¥184,000</td><td class="num">¥220,000</td><td class="desc">約台幣 3.9 萬～4.7 萬／港幣 9,500～11,500</td></tr>
-        </tfoot>
-      </table>
+    <div class="panel cost-bars" id="cost-bars">
+      <div class="cb"><span class="lbl">住宿 6 晚<small>湯澤 4 晚＋白馬 2 晚</small></span><span class="track"><span class="fill" style="width:100%"></span></span><span class="val num">¥76,000</span></div>
+      <div class="cb"><span class="lbl">纜車票 6 天<small>5 座雪場</small></span><span class="track"><span class="fill" style="width:64.9%"></span></span><span class="val num">¥49,300</span></div>
+      <div class="cb"><span class="lbl">交通（4 人分攤）<small>租車、油、高速、停車</small></span><span class="track"><span class="fill" style="width:53.6%"></span></span><span class="val num">¥40,750</span></div>
+      <div class="cb"><span class="lbl">餐飲與泡湯<small>7 天</small></span><span class="track"><span class="fill" style="width:46.1%"></span></span><span class="val num">¥35,000</span></div>
+      <div class="cb opt"><span class="lbl">雪具雪衣租借<small>選配，自備則免</small></span><span class="track"><span class="fill" style="width:47.4%"></span></span><span class="val num">¥36,000</span></div>
+      <div class="cb total"><span class="lbl">每人合計</span><span></span><span class="val num">¥201,050</span></div>
     </div>
 
-    <div class="calc">
+    <div class="table-wrap">
+      <table class="cost">
+        <thead><tr><th scope="col">項目</th><th scope="col">估算方式</th><th scope="col" style="text-align:right">每人</th></tr></thead>
+        <tbody>
+          <tr class="grp"><th colspan="3">共同費用（4 人平分）</th></tr>
+          <tr><th scope="row">租車 7 天</th><td class="d">4WD SUV 或 MPV，含雪胎與免責險，總額約 ¥120,000–150,000</td><td class="n">¥33,750</td></tr>
+          <tr><th scope="row">油資</th><td class="d">全程約 650 km，總額約 ¥10,000</td><td class="n">¥2,500</td></tr>
+          <tr><th scope="row">高速公路費</th><td class="d">ETC 卡付費，D1 與 D5 兩段，總額約 ¥12,000</td><td class="n">¥3,000</td></tr>
+          <tr><th scope="row">雪場停車</th><td class="d">部分雪場收費，總額約 ¥6,000</td><td class="n">¥1,500</td></tr>
+          <tr><th scope="row">住宿 6 晚</th><td class="d">湯澤每人每晚約 ¥10,000 × 4；白馬旺季約 ¥18,000 × 2</td><td class="n">¥76,000</td></tr>
+          <tr class="grp"><th colspan="3">個人費用</th></tr>
+          <tr><th scope="row">纜車票</th><td class="d">岩原 5,500＋神樂 8,000 × 2＋石打丸山 8,500＋47 9,500＋栂池 9,800</td><td class="n">¥49,300</td></tr>
+          <tr><th scope="row">餐飲與泡湯</th><td class="d">每天約 ¥5,000，含溫泉入湯稅</td><td class="n">¥35,000</td></tr>
+          <tr><th scope="row">雪具雪衣租借（選配）</th><td class="d">全套雪板、雪鞋、雪衣褲，6 天</td><td class="n">¥36,000</td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="2">每人合計（自備雪具／全程租借）</td><td class="n">¥201,050／¥237,050</td></tr></tfoot>
+      </table>
+    </div>
+    <p class="excl">不含：往返長野的交通（東京 ↔ 長野新幹線指定席單程 ¥8,450）、機票、旅遊保險。纜車票若提早在網路購買，通常比窗口便宜。</p>
+
+    <div class="panel calc">
       <div>
         <p class="calc-q" id="rent-q">4 人中有幾位要租雪具？</p>
         <div class="seg" role="radiogroup" aria-labelledby="rent-q" id="rent-seg">
@@ -449,12 +757,12 @@ footer { padding-block: 24px 48px; border-top: 1px solid var(--line); margin-top
           <button type="button" role="radio" id="rent-3" data-n="3" aria-checked="false">3</button>
           <button type="button" role="radio" id="rent-4" data-n="4" aria-checked="false">4</button>
         </div>
-        <p class="seg-hint">雪具租賃每人 6 天約 ¥36,000，其他費用 4 人相同。</p>
+        <p class="seg-hint">雪具租借每人 6 天約 ¥36,000，其他費用 4 人相同。</p>
       </div>
       <div class="calc-out" aria-live="polite">
         <p class="calc-k">4 人團體總額</p>
-        <p class="calc-v" id="calc-total">¥736,000</p>
-        <p class="calc-s" id="calc-sub">全員自備雪具 · 每人 ¥184,000</p>
+        <p class="calc-v" id="calc-total">¥804,200</p>
+        <p class="calc-s" id="calc-sub">全員自備雪具 · 平均每人 ¥201,050</p>
       </div>
     </div>
   </section>
@@ -462,21 +770,50 @@ footer { padding-block: 24px 48px; border-top: 1px solid var(--line); margin-top
   <section class="section wrap" id="drive">
     <div class="section-head">
       <p class="kicker">SNOW DRIVING</p>
-      <h2>雪地自駕與行前提醒</h2>
+      <h2>雪地自駕須知</h2>
     </div>
     <div class="notes">
       <div class="note">
-        <h3>車型選擇</h3>
-        <p>4 個人 + 4 套雪板袋 + 4 個大行李箱，<strong>絕對不能租小車</strong>。請務必指定 <strong>SUV（如 RAV4、CX-5）</strong>或 <strong>7 人座 MPV</strong>。</p>
+        <h3>駕照文件（最重要）</h3>
+        <ul>
+          <li><strong>台灣駕照</strong>：駕照正本＋監理所開的日文譯本</li>
+          <li><strong>香港、馬來西亞、新加坡等</strong>：本國駕照＋1949 日內瓦公約國際駕照</li>
+          <li>中國大陸駕照無法在日本開車</li>
+        </ul>
+        <p>文件不齊，租車行會直接拒租。請開車的人先確認。</p>
+      </div>
+      <div class="note">
+        <h3>租車與過路費</h3>
+        <ul>
+          <li>指定 <strong>SUV（RAV4、CX-5）或 7 人座 MPV</strong>，4 人＋4 套雪板＋4 個大行李箱放不進小車</li>
+          <li>加選 <strong>4WD</strong>。長野、新潟冬季租車通常標配雪胎，取車時再確認</li>
+          <li>外國人高速公路周遊券 JEP 已停售。租 <strong>ETC 卡</strong>直接付費即可，全程約 ¥12,000</li>
+          <li>長野取、長野還，不用付甩尾費</li>
+        </ul>
       </div>
       <div class="note">
         <h3>雪地駕駛守則</h3>
-        <p>山區道路常有壓雪路面或黑冰，與前車保持平常 <strong>3 倍以上</strong>的安全距離。</p>
+        <p>山路常有壓雪路面和黑冰，與前車保持平常 <strong>3 倍以上</strong>距離。</p>
         <ul class="rules"><li>不急加速</li><li>不急煞車</li><li>不急轉方向盤</li></ul>
       </div>
       <div class="note">
+        <h3>雪國停車小知識</h3>
+        <ul>
+          <li>過夜停車把<strong>雨刷立起來</strong>，避免凍在玻璃上</li>
+          <li>天冷不拉手煞車，打 P 檔就好，避免凍住</li>
+          <li>每天出門前清掉車頂積雪，開起來才不會往後噴</li>
+          <li>長距離移動排在白天，日落約 17:20</li>
+        </ul>
+      </div>
+    </div>
+    <div class="notes" style="border-top:0">
+      <div class="note">
+        <h3>輪流開車</h3>
+        <p>D1 和 D5 各要開 3 小時左右，至少安排 2 位駕駛輪替，滑完雪後的駕駛要特別留意疲勞。</p>
+      </div>
+      <div class="note">
         <h3>裝備建議</h3>
-        <p>貼身排汗層、專業雪襪、防風防水手套與護目鏡（Goggles），建議出發前自行購買，衛生又貼合臉型。</p>
+        <p>貼身排汗層、專業雪襪、防風防水手套與護目鏡建議出發前自己買，衛生又合身。山頂氣溫常在零下 10°C 上下。</p>
       </div>
     </div>
   </section>
@@ -486,60 +823,393 @@ footer { padding-block: 24px 48px; border-top: 1px solid var(--line); margin-top
       <p class="kicker">BEFORE YOU GO</p>
       <h2>出發前清單</h2>
     </div>
-    <ul class="checklist" id="checks">
-      <li><label><input type="checkbox" id="ck-rail"><span>訂東京 ↔ 長野 北陸新幹線指定席（來回）</span></label></li>
-      <li><label><input type="checkbox" id="ck-car"><span>預約長野站取還車：4WD + 雪胎（Studless）</span></label></li>
-      <li><label><input type="checkbox" id="ck-size"><span>車型指定 SUV（RAV4、CX-5）或 7 人座 MPV</span></label></li>
-      <li><label><input type="checkbox" id="ck-etc"><span>加租 ETC 卡，詢問 JEP Pass 外國人高速公路專案</span></label></li>
-      <li><label><input type="checkbox" id="ck-stay"><span>訂住宿：越後湯澤 4 晚、白馬村 2 晚（八方尾根或 Echoland 附近）</span></label></li>
-      <li><label><input type="checkbox" id="ck-gear"><span>確認誰自備雪具、誰要租借</span></label></li>
+    <ul class="checklist panel" id="checks">
+      <li><label><input type="checkbox" id="ck-date"><span>4 人確認日期，各自訂好往返長野的交通</span></label></li>
+      <li><label><input type="checkbox" id="ck-license"><span>開車的人備齊駕照文件（日文譯本或國際駕照）</span></label></li>
+      <li><label><input type="checkbox" id="ck-car"><span>預約長野站租車：SUV 或 7 人座 MPV，4WD、雪胎、ETC 卡、免責險</span></label></li>
+      <li><label><input type="checkbox" id="ck-stay"><span>訂住宿：越後湯澤 4 晚、白馬村 2 晚（八方或 Echoland 附近）</span></label></li>
+      <li><label><input type="checkbox" id="ck-ticket"><span>網路預購纜車票（Hakuba 47、栂池有線上價）</span></label></li>
+      <li><label><input type="checkbox" id="ck-gear"><span>確認誰自備雪具、誰要租借，預約雪具店</span></label></li>
       <li><label><input type="checkbox" id="ck-buy"><span>自購排汗層、雪襪、防水手套、護目鏡</span></label></li>
+      <li><label><input type="checkbox" id="ck-ins"><span>買含滑雪意外的旅遊保險</span></label></li>
     </ul>
     <div class="check-meta">
-      <span>已完成 <b id="check-count">0</b> / <span id="check-total">7</span> · 勾選紀錄只存在這台裝置的瀏覽器</span>
+      <span>已完成 <b id="check-count">0</b> / <span id="check-total">8</span> · 勾選紀錄只存在這台裝置</span>
       <button type="button" class="reset" id="check-reset">全部取消勾選</button>
     </div>
   </section>
 </main>
 
 <footer class="wrap">
-  <p>行程內容整理自 Gemini 產出的 ski_itinerary.md。金額皆為預估值。</p>
+  <p>行程以 Gemini 產出的 ski_itinerary.md 為基礎調整。票價、營業時間會變動，出發前請再到官網確認。資料整理於 2026 年 11 月。</p>
+  <ul>
+    <li><a href="https://www.princehotels.co.jp/ski/kagura/winter/lift/" target="_blank" rel="noopener">神樂滑雪場 票價（西武王子）</a></li>
+    <li><a href="https://niigata-kankou.or.jp/ski/10690" target="_blank" rel="noopener">岩原滑雪場（新潟縣觀光協會）</a> · <a href="https://niigata-kankou.or.jp/ski/10693" target="_blank" rel="noopener">石打丸山</a> · <a href="https://niigata-kankou.or.jp/ski/10681" target="_blank" rel="noopener">神樂</a></li>
+    <li><a href="https://tabiris.com/archives/skilift2027/" target="_blank" rel="noopener">2026-27 季各地纜車票價（tabiris）</a></li>
+    <li><a href="https://www.hakubaescal.com/winter-en/tickets/lift/" target="_blank" rel="noopener">白馬五竜・Hakuba 47 2026-27 票價</a></li>
+    <li><a href="https://hakuba.com/?p=43029" target="_blank" rel="noopener">Hakuba 47 雪場資料</a> · <a href="https://www.tour.ne.jp/j_special/ski/90/" target="_blank" rel="noopener">栂池高原雪場資料</a></li>
+    <li><a href="https://www.japan.travel/en/au/plan/expressway-passes" target="_blank" rel="noopener">日本高速公路周遊券現況（JEP 已停售）</a></li>
+    <li><a href="https://jr-shinkansen.net/articles/fare-hokuriku/" target="_blank" rel="noopener">北陸新幹線票價</a></li>
+  </ul>
 </footer>
 
 <script>
 (function () {
-  var BASE = 184000, RENT = 36000, PEOPLE = 4;
-  var yen = function (n) { return '¥' + n.toLocaleString('en-US'); };
-
-  // Group cost calculator
-  var seg = document.getElementById('rent-seg');
-  var totalEl = document.getElementById('calc-total');
-  var subEl = document.getElementById('calc-sub');
-  function setRent(n) {
-    Array.prototype.forEach.call(seg.querySelectorAll('button'), function (b) {
-      b.setAttribute('aria-checked', String(Number(b.dataset.n) === n));
-    });
-    var total = BASE * PEOPLE + RENT * n;
-    totalEl.textContent = yen(total);
-    var who = n === 0 ? '全員自備雪具' : n === PEOPLE ? '全員租雪具' : n + ' 人租雪具';
-    subEl.textContent = who + ' · 平均每人 ' + yen(Math.round(total / PEOPLE));
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent) {
+    var n = document.createElementNS(SVGNS, tag);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
   }
-  seg.addEventListener('click', function (e) {
-    var b = e.target.closest('button');
-    if (b) setRent(Number(b.dataset.n));
+  function yen(n) { return '¥' + Math.round(n).toLocaleString('en-US'); }
+
+  /* ---------- Language toggle (Traditional / Simplified) ---------- */
+  var lang = 'tw', conv = null, originals = new WeakMap(), loading = false;
+  var langBtn = document.getElementById('lang-btn');
+  var origTitle = document.title;
+  function walkText(root, fn) {
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    var n; while ((n = w.nextNode())) {
+      var p = n.parentNode && n.parentNode.nodeName;
+      if (p === 'SCRIPT' || p === 'STYLE') continue;
+      fn(n);
+    }
+  }
+  function applyLang(root) {
+    root = root || document.body;
+    walkText(root, function (n) {
+      if (!originals.has(n)) originals.set(n, n.nodeValue);
+      var o = originals.get(n);
+      var v = (lang === 'cn' && conv) ? conv(o) : o;
+      if (n.nodeValue !== v) n.nodeValue = v;
+    });
+    root.querySelectorAll && root.querySelectorAll('[aria-label]').forEach(function (e) {
+      if (!e.dataset.al) e.dataset.al = e.getAttribute('aria-label');
+      e.setAttribute('aria-label', (lang === 'cn' && conv) ? conv(e.dataset.al) : e.dataset.al);
+    });
+    if (root === document.body) {
+      document.title = (lang === 'cn' && conv) ? conv(origTitle) : origTitle;
+      document.documentElement.lang = lang === 'cn' ? 'zh-Hans' : 'zh-Hant';
+      langBtn.textContent = lang === 'cn' ? '繁體' : '简体';
+    }
+  }
+  window.__applyLang = applyLang;
+  function loadConv(cb) {
+    if (conv) return cb(true);
+    if (loading) return;
+    loading = true;
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/t2cn.js';
+    s.onload = function () {
+      try { conv = window.OpenCC.Converter({ from: 'twp', to: 'cn' }); } catch (e) { conv = null; }
+      loading = false; cb(!!conv);
+    };
+    s.onerror = function () { loading = false; cb(false); };
+    document.head.appendChild(s);
+  }
+  function setLang(next, save) {
+    if (next === 'cn') {
+      loadConv(function (ok) {
+        if (!ok) { langBtn.hidden = true; return; }
+        lang = 'cn'; applyLang();
+      });
+    } else { lang = 'tw'; applyLang(); }
+    if (save) { try { localStorage.setItem('ski-trip-lang', next); } catch (e) {} }
+  }
+  langBtn.addEventListener('click', function () { setLang(lang === 'cn' ? 'tw' : 'cn', true); });
+
+  /* ---------- Snowfall ---------- */
+  (function snow() {
+    var c = document.getElementById('snow'); if (!c || !c.getContext) return;
+    var ctx = c.getContext('2d'), flakes = [], W = 0, H = 0, dpr = Math.min(window.devicePixelRatio || 1, 2), raf = null;
+    function color() { return getComputedStyle(document.documentElement).getPropertyValue('--flake').trim() || 'rgba(35,86,196,.2)'; }
+    function size() {
+      var r = c.getBoundingClientRect(); W = r.width; H = r.height;
+      c.width = W * dpr; c.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var n = Math.round(Math.min(90, W / 10));
+      flakes = []; for (var i = 0; i < n; i++) flakes.push({ x: Math.random() * W, y: Math.random() * H, r: 1 + Math.random() * 2.4, s: 0.3 + Math.random() * 0.8, d: Math.random() * Math.PI * 2 });
+    }
+    function draw(step) {
+      ctx.clearRect(0, 0, W, H); ctx.fillStyle = color();
+      for (var i = 0; i < flakes.length; i++) {
+        var f = flakes[i];
+        if (step) { f.y += f.s; f.d += 0.01; f.x += Math.sin(f.d) * 0.35; if (f.y > H + 4) { f.y = -4; f.x = Math.random() * W; } }
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    function loop() { draw(true); raf = requestAnimationFrame(loop); }
+    size(); draw(false);
+    if (!reduce) loop();
+    window.addEventListener('resize', function () { size(); draw(false); });
+    document.addEventListener('visibilitychange', function () {
+      if (reduce) return;
+      if (document.hidden) { cancelAnimationFrame(raf); raf = null; } else if (!raf) loop();
+    });
+  })();
+
+  /* ---------- Route map ---------- */
+  var LON0 = 137.62, LON1 = 139.00, LAT0 = 36.55, LAT1 = 37.50, MW = 660, MH = 569;
+  function P(lat, lon) { return [((lon - LON0) / (LON1 - LON0)) * MW, ((LAT1 - lat) / (LAT1 - LAT0)) * MH]; }
+  function pathD(pts) { return pts.map(function (p, i) { var q = P(p[0], p[1]); return (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join(' '); }
+
+  var NAGANO = [36.643, 138.189], YUZAWA = [36.936, 138.809], HAKUBA = [36.698, 137.862];
+  var IWAP = [36.912, 138.792], KAGURA = [36.866, 138.785], ISHI = [36.996, 138.832], H47 = [36.680, 137.830], TSUGA = [36.776, 137.835];
+  var JOSHIN = [[36.648, 138.27], [36.74, 138.33], [36.83, 138.35], [36.84, 138.24], [36.89, 138.19], [36.98, 138.22], [37.04, 138.25], [37.10, 138.29]];
+  var HOKURIKU_E = [[37.10, 138.29], [37.18, 138.33], [37.27, 138.42], [37.32, 138.52], [37.37, 138.59], [37.41, 138.69], [37.41, 138.81]];
+  var KANETSU_S = [[37.41, 138.81], [37.33, 138.81], [37.26, 138.86], [37.21, 138.94], [37.13, 138.92], [37.07, 138.88], [37.00, 138.845], [36.95, 138.82]];
+  function rev(a) { return a.slice().reverse(); }
+  var ROUTES = {
+    d1: [NAGANO].concat(JOSHIN, HOKURIKU_E.slice(1), KANETSU_S.slice(1), [YUZAWA]),
+    d2: [YUZAWA, [36.925, 138.80], IWAP],
+    d3: [YUZAWA, [36.90, 138.80], KAGURA],
+    d5: [YUZAWA, ISHI, [37.00, 138.845]].concat(rev(KANETSU_S).slice(2), rev(HOKURIKU_E).slice(1), [[37.11, 138.20], [37.10, 138.10], [37.06, 137.99], [37.02, 137.88], [36.95, 137.87], [36.87, 137.86], [36.80, 137.885], [36.776, 137.87], [36.73, 137.87], HAKUBA]),
+    d6: [HAKUBA, [36.69, 137.845], H47],
+    d7: [HAKUBA, [36.73, 137.87], [36.776, 137.86], TSUGA, [36.776, 137.86], [36.73, 137.87], HAKUBA, [36.672, 137.905], [36.655, 137.96], [36.625, 138.02], [36.615, 138.075], [36.635, 138.13], NAGANO]
+  };
+  var DAYS = {
+    all: ['7 天全程', '自駕總距離約 650 km，長途移動集中在 Day 1 和 Day 5。'],
+    d1: ['DAY 1 · 2/14', '長野站 → 越後湯澤，約 230 km，2.5–3 小時。'],
+    d2: ['DAY 2 · 2/15', '湯澤 ↔ 岩原，約 5 km，10 分。暖身日。'],
+    d3: ['DAY 3–4 · 2/16–17', '湯澤 ↔ 神樂三俣站，約 15 km，25–30 分。'],
+    d5: ['DAY 5 · 2/18', '石打丸山半天 → 白馬村，約 265 km，3–3.5 小時。'],
+    d6: ['DAY 6 · 2/19', '白馬村 ↔ Hakuba 47，約 5 km，10 分。'],
+    d7: ['DAY 7 · 2/20', '栂池 → 長野站還車，約 70 km，約 1.5 小時。']
+  };
+  var DAY_SPOT = { d2: 'iwappara', d3: 'kagura', d5: 'ishiuchi', d6: 'hakuba47', d7: 'tsugaike' };
+  var map = document.getElementById('map');
+  var hls = {}, pulses = {};
+
+  (function buildMap() {
+    var coast = [[36.95, 137.62], [37.00, 137.75], [37.04, 137.86], [37.08, 137.98], [37.12, 138.10], [37.17, 138.24], [37.24, 138.33], [37.30, 138.42], [37.36, 138.53], [37.42, 138.60], [37.50, 138.66]];
+    var seaPts = coast.concat([[37.50, 137.62]]);
+    el('path', { d: pathD(seaPts) + ' Z', class: 'sea' }, map);
+    el('path', { d: pathD(coast), class: 'coast' }, map);
+    var tx = function (lat, lon, txt, cls, dx, dy, anchor) {
+      var q = P(lat, lon);
+      var t = el('text', { x: (q[0] + (dx || 0)).toFixed(1), y: (q[1] + (dy || 0)).toFixed(1), class: 'halo ' + (cls || ''), 'text-anchor': anchor || 'start' }, map);
+      t.textContent = txt; return t;
+    };
+    tx(37.28, 137.85, '日本海', 't-sea');
+    tx(37.22, 138.70, '新潟縣', 't-pref');
+    tx(36.60, 138.50, '長野縣', 't-pref');
+    // peaks
+    [[36.758, 137.759, '白馬岳 2,932', 0, 18, 'middle'], [36.891, 138.114, '妙高山 2,454', 0, 18, 'middle'], [36.846, 138.690, '苗場山 2,145', -8, 4, 'end'], [36.837, 138.930, '谷川岳 1,977', 0, 18, 'middle']].forEach(function (p) {
+      var q = P(p[0], p[1]);
+      el('path', { d: 'M' + (q[0] - 7) + ' ' + (q[1] + 5) + ' L' + q[0] + ' ' + (q[1] - 7) + ' L' + (q[0] + 7) + ' ' + (q[1] + 5) + ' Z', class: 'peak' }, map);
+      tx(p[0], p[1], p[2], 't-muted minor', p[3], p[4], p[5]);
+    });
+    // base routes
+    Object.keys(ROUTES).forEach(function (k) { el('path', { d: pathD(ROUTES[k]), class: 'base' }, map); });
+    Object.keys(ROUTES).forEach(function (k) { hls[k] = el('path', { d: pathD(ROUTES[k]), class: 'hl', 'data-day': k }, map); });
+    // junction labels
+    tx(37.10, 138.29, '上越 JCT', 't-muted minor', 8, 4);
+    tx(37.41, 138.81, '長岡 JCT', 't-muted minor', -8, -8, 'end');
+    tx(37.02, 137.88, '糸魚川', 't-muted minor', 8, -4);
+    // resorts
+    var spots = [
+      ['ishiuchi', ISHI, '石打丸山', 9, 4, 'start'],
+      ['iwappara', IWAP, '岩原', 9, 6, 'start'],
+      ['kagura', KAGURA, '神樂', -9, 10, 'end'],
+      ['tsugaike', TSUGA, '栂池高原', 9, 4, 'start'],
+      ['hakuba47', H47, 'Hakuba 47', -9, 12, 'end']
+    ];
+    spots.forEach(function (s) {
+      var q = P(s[1][0], s[1][1]);
+      pulses[s[0]] = el('circle', { cx: q[0], cy: q[1], r: 8, class: 'pulse' }, map);
+      var g = el('g', { tabindex: '0', role: 'button', 'aria-label': s[2] + ' 雪場介紹', style: 'cursor:pointer' }, map);
+      el('path', { d: 'M' + q[0] + ' ' + (q[1] - 7) + ' L' + (q[0] + 7) + ' ' + (q[1] + 5) + ' L' + (q[0] - 7) + ' ' + (q[1] + 5) + ' Z', class: 'resort' }, g);
+      var t = el('text', { x: q[0] + s[3], y: q[1] + s[4], class: 'halo', 'text-anchor': s[5] }, g); t.textContent = s[2];
+      var go = function () { gotoResort(s[0]); };
+      g.addEventListener('click', go);
+      g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    });
+    // stays
+    [[YUZAWA, '越後湯澤', -10, -6, 'end'], [HAKUBA, '白馬村', 10, 4, 'start']].forEach(function (s) {
+      var q = P(s[0][0], s[0][1]);
+      el('rect', { x: q[0] - 5, y: q[1] - 5, width: 10, height: 10, class: 'stay' }, map);
+      var t = el('text', { x: q[0] + s[2], y: q[1] + s[3], class: 'halo t-big', 'text-anchor': s[4] }, map); t.textContent = s[1];
+    });
+    // Nagano station
+    var qn = P(NAGANO[0], NAGANO[1]);
+    el('circle', { cx: qn[0], cy: qn[1], r: 7, class: 'station' }, map);
+    var tn = el('text', { x: qn[0] + 11, y: qn[1] + 5, class: 'halo t-big' }, map); tn.textContent = '長野站';
+    var tn2 = el('text', { x: qn[0] + 11, y: qn[1] + 21, class: 'halo t-muted' }, map); tn2.textContent = '集合・解散';
+    // car
+    window.__car = { ring: el('circle', { cx: qn[0], cy: qn[1], r: 13, class: 'car-ring' }, map), dot: el('circle', { cx: qn[0], cy: qn[1], r: 6, class: 'car' }, map) };
+  })();
+
+  var hudDay = document.getElementById('hud-day'), hudText = document.getElementById('hud-text');
+  var chips = Array.prototype.slice.call(document.querySelectorAll('.map-tools .chip[data-day]'));
+  var playBtn = document.getElementById('play'), playLabel = document.getElementById('play-label');
+  var animToken = 0;
+
+  function setHud(k) { hudDay.textContent = DAYS[k][0]; hudText.textContent = DAYS[k][1]; applyLang(hudDay.parentNode); }
+  function moveCar(pt) { var c = window.__car; c.ring.setAttribute('cx', pt.x); c.ring.setAttribute('cy', pt.y); c.dot.setAttribute('cx', pt.x); c.dot.setAttribute('cy', pt.y); }
+  function setPulse(k) { Object.keys(pulses).forEach(function (s) { pulses[s].classList.toggle('on', s === DAY_SPOT[k]); }); }
+  function showDay(k) {
+    chips.forEach(function (c) { c.setAttribute('aria-pressed', String(c.dataset.day === k)); });
+    Object.keys(hls).forEach(function (d) {
+      var p = hls[d], on = k === 'all' || d === k;
+      p.classList.toggle('on', on);
+      p.style.strokeDasharray = ''; p.style.strokeDashoffset = '';
+    });
+    setHud(k); setPulse(k);
+  }
+  function animateDay(k, token, done) {
+    var p = hls[k], len = p.getTotalLength();
+    var dur = reduce ? 0 : Math.max(900, Math.min(3200, len * 6));
+    p.classList.add('on'); p.style.strokeDasharray = len + ' ' + len; p.style.strokeDashoffset = len;
+    setHud(k); setPulse(k);
+    chips.forEach(function (c) { c.setAttribute('aria-pressed', String(c.dataset.day === k)); });
+    var t0 = null;
+    function frame(ts) {
+      if (token !== animToken) return;
+      if (t0 === null) t0 = ts;
+      var t = dur ? Math.min(1, (ts - t0) / dur) : 1;
+      var e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      p.style.strokeDashoffset = len * (1 - e);
+      moveCar(p.getPointAtLength(len * e));
+      if (t < 1) requestAnimationFrame(frame); else { p.style.strokeDasharray = ''; p.style.strokeDashoffset = ''; done && done(); }
+    }
+    requestAnimationFrame(frame);
+  }
+  var ORDER = ['d1', 'd2', 'd3', 'd5', 'd6', 'd7'];
+  function playAll() {
+    var token = ++animToken;
+    Object.keys(hls).forEach(function (d) { hls[d].classList.remove('on'); });
+    playLabel.textContent = '重新播放'; applyLang(playBtn);
+    var i = 0;
+    (function next() {
+      if (token !== animToken) return;
+      if (i >= ORDER.length) { showDay('all'); return; }
+      var k = ORDER[i++];
+      animateDay(k, token, function () { setTimeout(next, reduce ? 0 : 450); });
+    })();
+  }
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () {
+      var k = c.dataset.day, token = ++animToken;
+      if (k === 'all') { showDay('all'); return; }
+      Object.keys(hls).forEach(function (d) { hls[d].classList.toggle('on', d === k); });
+      animateDay(k, token);
+    });
   });
+  playBtn.addEventListener('click', playAll);
+  showDay('all');
+  // autoplay once when the map first comes into view
+  if (!reduce && 'IntersectionObserver' in window) {
+    var mo = new IntersectionObserver(function (es) {
+      if (es.some(function (e) { return e.isIntersecting; })) { mo.disconnect(); playAll(); }
+    }, { threshold: 0.4 });
+    mo.observe(map);
+  }
+
+  function gotoResort(id) {
+    var t = document.getElementById('r-' + id);
+    if (t) t.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }
+  document.querySelectorAll('[data-goto]').forEach(function (b) { b.addEventListener('click', function () { gotoResort(b.dataset.goto); }); });
+
+  /* ---------- Elevation chart ---------- */
+  var RES = [
+    { id: 'iwappara', n: '岩原', base: 400, top: 985, run: '4.0 km', area: 'yz' },
+    { id: 'kagura', n: '神樂', base: 620, top: 1845, run: '6.0 km', area: 'yz' },
+    { id: 'ishiuchi', n: '石打丸山', base: 256, top: 920, run: '4.0 km', area: 'yz' },
+    { id: 'hakuba47', n: 'Hakuba 47', base: 820, top: 1614, run: '6.4 km', area: 'hk' },
+    { id: 'tsugaike', n: '栂池高原', base: 800, top: 1704, run: '5.0 km', area: 'hk' }
+  ];
+  (function buildChart() {
+    var svg = document.getElementById('elev'), tip = document.getElementById('tip');
+    var L = 46, R = 630, T = 26, B = 236, MAX = 2000;
+    var y = function (v) { return B - (v / MAX) * (B - T); };
+    [0, 500, 1000, 1500, 2000].forEach(function (v) {
+      el('line', { x1: L, x2: R, y1: y(v), y2: y(v), class: 'grid' }, svg);
+      var t = el('text', { x: L - 8, y: y(v) + 4, 'text-anchor': 'end' }, svg); t.textContent = v === 0 ? '0 m' : v.toLocaleString('en-US');
+    });
+    var xs = [100, 190, 280, 430, 520], bw = 34;
+    RES.forEach(function (r, i) {
+      var x = xs[i], yt = y(r.top), yb = y(r.base), h = yb - yt;
+      var bar = el('path', {
+        d: 'M' + (x - bw / 2) + ' ' + yb + ' V' + (yt + 4) + ' Q' + (x - bw / 2) + ' ' + yt + ' ' + (x - bw / 2 + 4) + ' ' + yt + ' H' + (x + bw / 2 - 4) + ' Q' + (x + bw / 2) + ' ' + yt + ' ' + (x + bw / 2) + ' ' + (yt + 4) + ' V' + yb + ' Z',
+        class: 'bar', tabindex: '0', 'data-i': i, 'aria-label': r.n + '，山腳 ' + r.base + ' m，山頂 ' + r.top + ' m'
+      }, svg);
+      bar.style.animationDelay = (i * 0.08) + 's';
+      var tt = el('text', { x: x, y: yt - 8, 'text-anchor': 'middle', class: 'v' }, svg); tt.textContent = r.top.toLocaleString('en-US');
+      var tb = el('text', { x: x, y: yb + 15, 'text-anchor': 'middle' }, svg); tb.textContent = r.base;
+      var nm = el('text', { x: x, y: 262, 'text-anchor': 'middle', class: 'name' }, svg); nm.textContent = r.n;
+      function show() {
+        tip.innerHTML = '';
+        var b = document.createElement('b'); b.textContent = r.n; tip.appendChild(b);
+        tip.appendChild(document.createTextNode('山腳 ' + r.base + ' m → 山頂 ' + r.top.toLocaleString('en-US') + ' m'));
+        tip.appendChild(document.createElement('br'));
+        tip.appendChild(document.createTextNode('落差 ' + (r.top - r.base).toLocaleString('en-US') + ' m · 最長滑走 ' + r.run));
+        applyLang(tip);
+        tip.hidden = false;
+        var box = svg.getBoundingClientRect(), panel = svg.parentNode.getBoundingClientRect();
+        var sx = box.width / 640;
+        var left = box.left - panel.left + x * sx + 22;
+        if (left + 220 > panel.width) left = box.left - panel.left + x * sx - 22 - Math.min(220, tip.offsetWidth);
+        tip.style.left = Math.max(8, left) + 'px';
+        tip.style.top = (box.top - panel.top + yt * sx) + 'px';
+      }
+      function hide() { tip.hidden = true; }
+      bar.addEventListener('mouseenter', show); bar.addEventListener('focus', show);
+      bar.addEventListener('mouseleave', hide); bar.addEventListener('blur', hide);
+      bar.addEventListener('click', function () { show(); });
+    });
+    // area grouping
+    [[60, 320, '新潟・湯澤'], [390, 560, '長野・白馬']].forEach(function (g) {
+      el('line', { x1: g[0], x2: g[1], y1: 276, y2: 276, class: 'grp' }, svg);
+      var t = el('text', { x: (g[0] + g[1]) / 2, y: 294, 'text-anchor': 'middle' }, svg); t.textContent = g[2];
+    });
+  })();
+
+  // Grow animations when charts first scroll into view (they rest fully drawn before that)
+  if (!reduce && 'IntersectionObserver' in window) {
+    [document.getElementById('elev'), document.getElementById('cost-bars')].forEach(function (node) {
+      var io = new IntersectionObserver(function (es) {
+        if (es.some(function (e) { return e.isIntersecting; })) { io.disconnect(); node.classList.add('grow'); }
+      }, { threshold: 0.05 });
+      io.observe(node);
+    });
+  }
+
+  /* ---------- Calculator ---------- */
+  var BASE = 201050, RENT = 36000, PEOPLE = 4;
+  var seg = document.getElementById('rent-seg'), totalEl = document.getElementById('calc-total'), subEl = document.getElementById('calc-sub');
+  var shown = BASE * PEOPLE, tweenId = 0;
+  function tween(to) {
+    var from = shown, id = ++tweenId, t0 = null, dur = reduce ? 0 : 450;
+    function f(ts) {
+      if (id !== tweenId) return;
+      if (t0 === null) t0 = ts;
+      var t = dur ? Math.min(1, (ts - t0) / dur) : 1;
+      shown = from + (to - from) * (1 - Math.pow(1 - t, 3));
+      totalEl.textContent = yen(shown);
+      if (t < 1) requestAnimationFrame(f); else shown = to;
+    }
+    requestAnimationFrame(f);
+  }
+  function setRent(n) {
+    Array.prototype.forEach.call(seg.querySelectorAll('button'), function (b) { b.setAttribute('aria-checked', String(Number(b.dataset.n) === n)); });
+    var total = BASE * PEOPLE + RENT * n;
+    tween(total);
+    var who = n === 0 ? '全員自備雪具' : n === PEOPLE ? '全員租雪具' : n + ' 人租雪具';
+    subEl.textContent = who + ' · 平均每人 ' + yen(total / PEOPLE);
+    applyLang(subEl);
+  }
+  seg.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) setRent(Number(b.dataset.n)); });
   seg.addEventListener('keydown', function (e) {
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
     var cur = Number(seg.querySelector('[aria-checked="true"]').dataset.n);
     var next = Math.max(0, Math.min(PEOPLE, cur + (e.key === 'ArrowRight' ? 1 : -1)));
-    setRent(next);
-    document.getElementById('rent-' + next).focus();
-    e.preventDefault();
+    setRent(next); document.getElementById('rent-' + next).focus(); e.preventDefault();
   });
-  setRent(0);
 
-  // Checklist, saved per device
-  var KEY = 'ski-trip-checks-v1';
+  /* ---------- Checklist ---------- */
+  var KEY = 'ski-trip-checks-v2';
   var boxes = Array.prototype.slice.call(document.querySelectorAll('#checks input'));
   var countEl = document.getElementById('check-count');
   document.getElementById('check-total').textContent = boxes.length;
@@ -552,25 +1222,28 @@ footer { padding-block: 24px 48px; border-top: 1px solid var(--line); margin-top
     try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (err) {}
   }
   boxes.forEach(function (b) { b.checked = !!saved[b.id]; b.addEventListener('change', sync); });
-  document.getElementById('check-reset').addEventListener('click', function () {
-    boxes.forEach(function (b) { b.checked = false; });
-    sync();
-  });
+  document.getElementById('check-reset').addEventListener('click', function () { boxes.forEach(function (b) { b.checked = false; }); sync(); });
   sync();
 
-  // Highlight the nav link for the section in view
+  /* ---------- Nav highlight ---------- */
   var links = Array.prototype.slice.call(document.querySelectorAll('.nav-links a'));
   if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (entries) {
+    var io2 = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
         if (!en.isIntersecting) return;
         links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + en.target.id); });
       });
     }, { rootMargin: '-40% 0px -55% 0px' });
-    links.forEach(function (a) {
-      var s = document.querySelector(a.getAttribute('href'));
-      if (s) io.observe(s);
-    });
+    links.forEach(function (a) { var s = document.querySelector(a.getAttribute('href')); if (s) io2.observe(s); });
   }
+
+  /* ---------- Initial language ---------- */
+  var pref = null;
+  try { pref = localStorage.getItem('ski-trip-lang'); } catch (e) {}
+  if (!pref) {
+    var langs = (navigator.languages || [navigator.language || '']).join(',').toLowerCase();
+    pref = /zh-(cn|sg|my|hans)/.test(langs) ? 'cn' : 'tw';
+  }
+  if (pref === 'cn') setLang('cn', false);
 })();
 </script>
